@@ -1,7 +1,6 @@
 from langchain.agents import Tool
 from langchain.chat_models import ChatOpenAI
 from langchain import LLMChain, PromptTemplate
-from langchain.chains.conversation.memory import ConversationBufferMemory
 import openai
 import pytesseract
 from PIL import Image
@@ -9,17 +8,18 @@ import firebase_admin
 from firebase_admin import credentials, storage
 import os
 from dotenv import load_dotenv
+from firebase_functions import firestore_fn, https_fn
+from firebase_admin import initialize_app, firestore, credentials, storage
+import google.cloud.firestore
 
 load_dotenv()
-
-memory = ConversationBufferMemory(memory_key="chat_history")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 openai.api_key = OPENAI_API_KEY
 
 def extract_image_info(image_name):
     pytesseract.pytesseract.tesseract_cmd = "C:/Program Files/Tesseract-OCR/tesseract.exe"
 
-    cred = credentials.Certificate("service_account_key.json")
+    cred = credentials.Certificate("hackillinois25/service_account_key.json")
     firebase_admin.initialize_app(cred, {
         'storageBucket': 'hack-illinois-2025.firebasestorage.app'
     })
@@ -63,6 +63,17 @@ def run_LLM(image_text):
     output = chain.run({"image_text": image_text})
     return output
 
-text = extract_image_info("test2.png")
-print(run_LLM(text))
+@https_fn.on_request()
+def parseInvoice(req):
+    image_name = req.args.get("image_name")
+    if not image_name:
+        return https_fn.Response("Missing 'image_name' query parameter.", status=400)
+    try:
+        image_text = extract_image_info(image_name)
+        parsed_output = run_LLM(image_text)
+        return https_fn.Response(parsed_output, status=200, mimetype="application/json")
+    except Exception as e:
+        print(f"Error processing invoice for {image_name}: {e}")
+        return https_fn.Response(f"Error processing invoice: {e}", status=500)
+
 
