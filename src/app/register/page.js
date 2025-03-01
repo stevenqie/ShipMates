@@ -1,6 +1,9 @@
 'use client'
 
 import { useState } from "react";
+import { db } from "@/firebaseConfig";
+import { doc, setDoc } from "firebase/firestore";
+
 import "./style.css";
 
 function cn(...classes) {
@@ -179,6 +182,5 @@ export default function LoginForm({ className }) {
     </div>
   );
 }
-import { db } from "@/firebaseConfig";
-import { doc, setDoc } from "firebase/firestore";
+
 
