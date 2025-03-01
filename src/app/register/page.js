@@ -7,13 +7,40 @@ function cn(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
+
+//userdata should be a json file with the following fields:
+//username, firstName, lastName, profilePictureURL, email, phoneNumber, bio, rating, completedOrders, addresses
+//addresses should be a list of json objects with the following fields:
+//street, city, state, zip, isPrimary
+export default function storeUserData(userdata) {
+    const userRef = doc(db, "users", userdata.username);
+  
+    return setDoc(userRef, {
+      username: userdata.username,
+      firstName: userdata.firstName,
+      lastName: userdata.lastName,
+      //profilePictureURL: userdata.profilePictureURL,
+      email: userdata.email,
+      phoneNumber: userdata.phoneNumber,
+      bio: userdata.bio,
+      rating: userdata.rating,
+      completedOrders: userdata.completedOrders,
+      addresses: userdata.addresses,
+    });
+  }
+  
+
 export default function LoginForm({ className }) {
   const [formData, setFormData] = useState({
     username: "",
     firstName: "",
     lastName: "",
-    phone: "",
-    zip: "",
+    email:"",
+    phoneNumber: "",
+    bio: "",
+    rating: 0,
+    completedOrders: 0,
+    addresses: "",
   });
 
   const [errors, setErrors] = useState({});
@@ -30,8 +57,8 @@ export default function LoginForm({ className }) {
 
     // ZIP Code Validation: Exactly 5 digits
     const zipRegex = /^\d{5}$/;
-    if (!zipRegex.test(formData.zip)) {
-      newErrors.zip = "ZIP code must be exactly 5 digits.";
+    if (!zipRegex.test(formData.addresses)) {
+      newErrors.addresses = "ZIP code must be exactly 5 digits.";
     }
 
     setErrors(newErrors);
@@ -44,6 +71,7 @@ export default function LoginForm({ className }) {
     if (validateInputs()) {
       const userData = { ...formData };
       setSubmittedData(userData);
+      storeUserData(userData);
       console.log("User Data JSON:", JSON.stringify(userData, null, 2));
       alert("Registration successful!");
     }
@@ -130,11 +158,11 @@ export default function LoginForm({ className }) {
               placeholder="Enter your Zip Code"
               className="input placeholder-gray-500 text-black"
               type="text"
-              value={formData.zip}
+              value={formData.addresses}
               onChange={handleChange}
             />
           </div>
-          {errors.zip && <p className="text-red-500">{errors.zip}</p>}
+          {errors.addresses && <p className="text-red-500">{errors.addresses}</p>}
 
           <button type="submit" className="button-submit">
             Register
@@ -154,24 +182,3 @@ export default function LoginForm({ className }) {
 import { db } from "@/firebaseConfig";
 import { doc, setDoc } from "firebase/firestore";
 
-
-//userdata should be a json file with the following fields:
-//username, firstName, lastName, profilePictureURL, email, phoneNumber, bio, rating, completedOrders, addresses
-//addresses should be a list of json objects with the following fields:
-//street, city, state, zip, isPrimary
-export default function storeUserData(userdata) {
-  const userRef = doc(db, "users", userdata.username);
-
-  return setDoc(userRef, {
-    username: userdata.username,
-    firstName: userdata.firstName,
-    lastName: userdata.lastName,
-    profilePictureURL: userdata.profilePictureURL,
-    email: userdata.email,
-    phoneNumber: userdata.phoneNumber,
-    bio: userdata.bio,
-    rating: userdata.rating,
-    completedOrders: userdata.completedOrders,
-    addresses: userdata.addresses,
-  });
-}
