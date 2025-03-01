@@ -15,7 +15,7 @@ function cn(...classes) {
 //username, firstName, lastName, profilePictureURL, email, phoneNumber, bio, rating, completedOrders, addresses
 //addresses should be a list of json objects with the following fields:
 //street, city, state, zip, isPrimary
-export default function storeUserData(userdata) {
+function storeUserData(userdata) {
     const userRef = doc(db, "users", userdata.username);
   
     return setDoc(userRef, {
@@ -157,7 +157,7 @@ export default function LoginForm({ className }) {
           </div>
           <div className="inputForm">
             <input
-              name="zip"
+              name="addresses"
               placeholder="Enter your Zip Code"
               className="input placeholder-gray-500 text-black"
               type="text"
