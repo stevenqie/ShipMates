@@ -19,7 +19,7 @@ openai.api_key = OPENAI_API_KEY
 def extract_image_info(image_name):
     pytesseract.pytesseract.tesseract_cmd = "C:/Program Files/Tesseract-OCR/tesseract.exe"
 
-    cred = credentials.Certificate("service_account_key.json")
+    cred = credentials.Certificate("hackillinois25/service_account_key.json")
     firebase_admin.initialize_app(cred, {
         'storageBucket': 'hack-illinois-2025.firebasestorage.app'
     })
@@ -64,7 +64,7 @@ def run_LLM(image_text):
     return output
 
 @https_fn.on_request()
-def parse_invoice(req):
+def parseInvoice(req):
     image_name = req.args.get("image_name")
     if not image_name:
         return https_fn.Response("Missing 'image_name' query parameter.", status=400)
