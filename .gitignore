@@ -35,10 +35,10 @@ yarn-error.log*
 .env*
 service_account_key.json
 functions
-
 # vercel
 .vercel
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+

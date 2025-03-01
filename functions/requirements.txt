@@ -1,8 +1,0 @@
-langchain
-langchain_community
-openai
-pytesseract
-Pillow
-firebase-admin
-firebase_functions
-python-dotenv
