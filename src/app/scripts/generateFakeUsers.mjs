@@ -20,12 +20,17 @@ export async function generateFakeUsers(count) {
             zip: faker.location.zipCode(),
             isPrimary: true
           },
-        ],
+        ]
       };
       await storeUserData(fakeUser);
     }
     console.log(`${count} fake users generated`);
   }
 
-  generateFakeUsers(100);
-  process.exit(0);
+  generateFakeData(100).then(() => {
+    console.log("done");
+    process.exit(0);
+  }).catch((error) => {
+    console.error("Error generating fake data:", error);
+    process.exit(1);
+  });
