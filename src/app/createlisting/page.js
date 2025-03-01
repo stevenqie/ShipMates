@@ -8,9 +8,9 @@ import { collection, query, where, getDocs } from "firebase/firestore";
 //location should be a json object with the following fields:
 //street, apt number (if relevant), city, state, zip
 export default function storeListingData(listingdata) {
-  const userRef = doc(db, "listings", listingdata.listingID);
+  const listingRef = doc(db, "listings", listingdata.listingID);
 
-  return setDoc(userRef, {
+  return setDoc(listingRef, {
     listingID: listingdata.listingID,
     hostID: listingdata.hostID,
     store: listingdata.store,

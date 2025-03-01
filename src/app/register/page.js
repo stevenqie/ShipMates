@@ -1,4 +1,4 @@
-import { db } from "@/firebaseConfig";
+import { db } from "../firebaseConfig.js";
 import { doc, setDoc } from "firebase/firestore";
 
 
@@ -13,7 +13,7 @@ export default function storeUserData(userdata) {
     username: userdata.username,
     firstName: userdata.firstName,
     lastName: userdata.lastName,
-    profilePictureURL: userdata.profilePictureURL,
+    // profilePictureURL: userdata.profilePictureURL,
     email: userdata.email,
     phoneNumber: userdata.phoneNumber,
     bio: userdata.bio,
