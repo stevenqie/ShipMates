@@ -9,7 +9,6 @@ async function getActiveListingsByZip(zipCode) {
         where("location.zip", "==", zipCode),
     );
     const snapshot = await getDocs(listingsQuery);
-
     return snapshot.docs.map((doc) => ({ 
         id: doc.data().id, 
         title: doc.data().title,
