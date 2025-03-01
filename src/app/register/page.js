@@ -15,7 +15,7 @@ function cn(...classes) {
 //username, firstName, lastName, profilePictureURL, email, phoneNumber, bio, rating, completedOrders, addresses
 //addresses should be a list of json objects with the following fields:
 //street, city, state, zip, isPrimary
-export default function storeUserData(userdata) {
+export function storeUserData(userdata) {
     const userRef = doc(db, "users", userdata.username);
   
     return setDoc(userRef, {
