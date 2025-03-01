@@ -23,14 +23,16 @@ export default async function Home({ params }) {
       {/* Navbar */}
       <SearchBar zipcode={zipcode}/>
       {/* Main Layout */}
-      <Box className="flex flex-1">
+      <Box className="flex flex-2">
         {/* Left Side - Grid Layout */}
-        <Box className="w-1/2 grid grid-cols-3 gap-4 p-4">
-          {[...Array(9)].map((_, index) => (
-              <ListingView key={index} listing={exampleSchema}/>
-          ))}
-        </Box>
-        
+        <Box className="w-1/2" p="10">
+            <Text>9 places in {zipcode}</Text>
+            <Box className="grid grid-cols-3 gap-4">
+              {[...Array(9)].map((_, index) => (
+                  <ListingView key={index} listing={exampleSchema}/>
+              ))}
+            </Box>
+        </Box> 
         {/* Right Side - Empty for Map Integration */}
         <Box className="w-1/2 bg-gray-50 flex items-center justify-center">
           {/* Map will go here */}
