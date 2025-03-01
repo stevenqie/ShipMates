@@ -32,6 +32,10 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+<<<<<<< HEAD
+=======
+service_account_key.json
+>>>>>>> parent of fc8fa58 (Merge pull request #5 from JCalago02/backend)
 
 # vercel
 .vercel
