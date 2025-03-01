@@ -1,6 +1,6 @@
 'use client'
 import { useState } from "react";
-import { db } from "../firebaseConfig.js";
+import { db } from "../lib/firebaseConfig.js";
 import { doc, setDoc } from "firebase/firestore";
 import { useSearchParams } from "next/navigation";
 
