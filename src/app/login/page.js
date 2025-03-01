@@ -1,5 +1,5 @@
 "use client";
-
+import { checkUser } from "../lib/checkUser";
 import { useEffect, useState } from "react";
 import Script from "next/script";
 import {jwtDecode} from "jwt-decode"; // Import JWT decoding library
@@ -9,13 +9,20 @@ import { Router } from "next/router";
 export default function LoginForm({ className }) {
   const [userEmail, setUserEmail] = useState(null);
   const router = useRouter();
-
-  function handleCredentialResponse(response) {
+  async function handleCredentialResponse(response) {
     const token = response.credential; // Google JWT Token
     const decoded = jwtDecode(token); // Decode JWT
     console.log("Decoded Google Response:", decoded);
     setUserEmail(decoded.email); // Extract email
-    router.push(`/register?email=${encodeURIComponent(decoded.email)}&pfp=${encodeURIComponent(decoded.picture)}`);
+    const zip = await checkUser(decoded.email);
+    console.log(zip);
+    if (zip == 0) {
+      router.push(`/register?email=${encodeURIComponent(decoded.email)}&pfp=${encodeURIComponent(decoded.picture)}`);
+    } else {
+      const zippy = JSON.parse(zip)
+      router.push(`/view/${zippy}`);
+    }
+    
   }
 
   function handleLoginClick() {
