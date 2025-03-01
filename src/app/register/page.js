@@ -3,7 +3,7 @@ import { useState } from "react";
 import { db } from "../lib/firebaseConfig.js";
 import { doc, setDoc } from "firebase/firestore";
 import { useSearchParams } from "next/navigation";
-
+import { useRouter } from 'next/navigation';
 import "./style.css";
 
 function cn(...classes) {
@@ -34,6 +34,7 @@ function storeUserData(userdata) {
   
 
 export default function LoginForm({ className }) {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const emailp = searchParams.get("email");
   const profilepic = searchParams.get("pfp");
@@ -72,18 +73,25 @@ export default function LoginForm({ className }) {
     return Object.keys(newErrors).length === 0; // True if no errors
   };
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
-
+  
     if (validateInputs()) {
       const userData = { ...formData };
       setSubmittedData(userData);
-      storeUserData(userData);
-      console.log("User Data JSON:", JSON.stringify(userData, null, 2));
-      alert("Registration successful!");
+  
+      try {
+        await storeUserData(userData);  // Await Firestore operation
+        console.log("User Data JSON:", JSON.stringify(userData, null, 2));
+        alert("Registration successful!");
+        router.push(`/view/${userData.addresses}`);
+      } catch (error) {
+        console.error("Error storing user data:", error);
+        alert("Registration failed! Please try again.");
+      }
     }
   };
-
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
     // Strip out non-digit characters for the phoneNumber input
