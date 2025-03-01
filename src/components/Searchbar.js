@@ -1,33 +1,17 @@
-"use client"
-import { useState } from "react";
-import AddModalListing from "./AddModalListing";
-import { Box, Button, Input } from "@chakra-ui/react";
-
 export default function SearchBar({zipcode}) {
     return (
-        <Box 
-            w="full"
-            h="14"
-            bg="gray.100"
-            display="flex"
-            alignItems="center"
-            justifyContent="space-between"
-            px="6"
-            borderBottom="1px solid"
-            borderColor="gray.200"
-        >
-
-
-            {/* Search/Filter Controls needs server side*/}
-            <Box className="search-lhs" display="flex" gap="4">
-                <Input 
-                    w="40"
-                    placeholder={zipcode}/>
-                <Button>Search!</Button>
-            </Box>
-
-            <AddModalListing/>
-        </Box>
+        <nav className="w-full h-14 bg-gray-100 flex items-center px-6 border-b">
+            <div className="text-lg font-semibold">Listings for {zipcode}</div>
+            <input
+                placeholder="Search..."
+                className="border rounded px-2 py-1"
+            />
+            <select className="border rounded px-2 py-1">
+                <option> Option 1 </option>
+                <option> Option 2 </option>
+            </select>
+            <button className="bg-blue-500 text-white px-4 py-1 rounded">Search!</button>
+        </nav>
     );
 
 }

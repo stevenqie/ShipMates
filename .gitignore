@@ -1,6 +1,5 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 service_account_key.json
-
 # dependencies
 /node_modules
 /.pnp
@@ -33,8 +32,6 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
-service_account_key.json
-functions
 
 # vercel
 .vercel
