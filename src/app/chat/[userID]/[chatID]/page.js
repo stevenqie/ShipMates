@@ -2,9 +2,10 @@
 import React, { useState, useEffect } from 'react';
 import { storage, db } from '../../../lib/firebaseConfig.js'; // Adjust the path as needed
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { HStack, Flex} from '@chakra-ui/react';
 import { doc, getDoc } from 'firebase/firestore';
-import { HStack } from '@chakra-ui/react';
 import InvoiceForm from './components/InvoiceForm.js'; // Import the new component
+import ChatComponent from '@/components/ChatComponent.js';
 
 // Replace with your actual function URL from Firebase Console
 const functionUrl = "https://parseinvoice-tayv6iv37a-uc.a.run.app";
@@ -94,9 +95,9 @@ const Page = ({ params }) => {
   }
 
   return (
-    <HStack>
-      <div style={{ display: 'flex', height: '100vh' }}>
-        <div style={{ flex: 1 }}></div>
+    <HStack width="100vw" height="100vh" spacing={0}>
+        <ChatComponent/>
+        <Flex width="50%" height="100%" p={8} justify="flex-end">
         {!invoiceData && (
           <>
             <h2>Upload Screenshot of Cart Details</h2>
@@ -128,7 +129,7 @@ const Page = ({ params }) => {
         {invoiceData && userID && chatID && (
           <InvoiceForm invoiceData={invoiceData} userID={userID} chatID={chatID} />
         )}
-      </div>
+        </Flex>
     </HStack>
   );
 };
