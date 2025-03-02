@@ -135,32 +135,34 @@ const TransactionDetails = ({ chatID }) => {
   };
 
   return (
-    <div style={{ padding: "1rem", border: "1px solid #ccc", borderRadius: "4px" }}>
-      <h2>Transaction Details</h2>
+    <div className="john-pork-container">
+      <h3>Transaction Details</h3>
+      <div className="compact-item-row">
       <p>
         <strong>Full Order Amount:</strong> ${transaction.grandTotal.toFixed(2)}
       </p>
+      </div>
       <h3>Items:</h3>
       <ul>
         {transaction.personbItems.map((item, index) => (
+          <div className="compact-item-row">
           <li key={index}>
             {item.name} - ${parseFloat(item.price).toFixed(2)}
           </li>
+          </div>
         ))}
       </ul>
-      <p>
-        <strong>Sub total:</strong> ${itemsTotal.toFixed(2)}
-      </p>
-      <p>
-        <strong>Taxes and Fees:</strong> ${taxesAndFees.toFixed(2)}
-      </p>
-      <p>
-        <strong>Your Payment Amount:</strong> ${transaction.personbPaymentAmount.toFixed(2)}
-      </p>
-      <div style={{ marginTop: "1rem" }}>
+      <div className="compact-item-row-two">
+      <strong>Sub total:</strong> ${itemsTotal.toFixed(2)}<br />
+      <strong>Taxes and Fees:</strong> ${taxesAndFees.toFixed(2)}<br />
+      <strong>Your Payment Amount:</strong> ${transaction.personbPaymentAmount.toFixed(2)}
+      </div>
+ 
+      <div style={{ marginTop: "1rem", display: "flex", justifyContent: "center" }}>
         <button
           onClick={confirmTransaction}
           disabled={updating}
+          className="compact-add-btn"
           style={{ marginRight: "1rem", padding: "0.5rem 1rem" }}
         >
           Confirm Transaction
@@ -168,6 +170,7 @@ const TransactionDetails = ({ chatID }) => {
         <button
           onClick={cancelTransaction}
           disabled={updating}
+          className="compact-add-btn"
           style={{ padding: "0.5rem 1rem" }}
         >
           Cancel Transaction
