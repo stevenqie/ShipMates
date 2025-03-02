@@ -30,6 +30,18 @@
     animation: gradient-shift 10s ease-in-out infinite;
     background-size: 200% 200%;
   }
+
+  .john-pork-container {
+    flex: 3;
+    background: linear-gradient(to top right, #ff4238, #0585d5);
+    border-radius: 10px;
+    padding: 0.75rem;
+    max-height: 700px;
+    overflow-y: auto;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    animation: gradient-shift 10s ease-in-out infinite;
+    background-size: 200% 200%;
+  }
   
   .compact-item-row {
     display: flex;
@@ -221,3 +233,13 @@
     }
   }
   
+  .compact-item-row-two {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; 
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  }
