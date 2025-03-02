@@ -5,18 +5,40 @@ import { doc, setDoc } from "firebase/firestore";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from 'next/navigation';
 import "./style.css";
+import { getAccountName, getAccountBalance, createAndGetAccount, changeAccountBalance, transaction, getAccount } from "../../../lib/api_endpoints";
 
 function cn(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-
 //userdata should be a json file with the following fields:
 //username, firstName, lastName, profilePictureURL, email, phoneNumber, bio, rating, completedOrders, addresses
 //addresses should be a list of json objects with the following fields:
 //street, city, state, zip, isPrimary
-function storeUserData(userdata) {
+
+async function storeUserData(userdata) {
     const userRef = doc(db, "users", userdata.username);
+
+    const customerData = {
+      "first_name": userdata.firstName, 
+      "last_name": userdata.lastName,
+      "address": {
+          "street_number": "88",
+          "street_name": "monkey ave",
+          "city": "Needham",
+          "state": "MA",
+          "zip": "02492"
+      }
+    }
+
+    const accountData = {
+      "type": "Credit Card", 
+      "nickname": "5000", 
+      "rewards": 0, 
+      "balance": 5000
+    }
+
+    const new_account_id = await createAndGetAccount(customerData, accountData);
   
     return setDoc(userRef, {
       username: userdata.username,
@@ -29,6 +51,7 @@ function storeUserData(userdata) {
       rating: userdata.rating,
       completedOrders: userdata.completedOrders,
       addresses: userdata.addresses,
+      accountID: new_account_id
     });
   }
   

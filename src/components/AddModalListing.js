@@ -204,7 +204,7 @@ export default function Listing({uname}) {
             zip: ""
         }
     });
-    const stores = ["Amazon", "Macys", "Uniqlo", "Walmart"];
+    const stores = ["Amazon", "Macys", "Uniqlo", "Walmart", "Weee!", "Fanatics"];
     // Title text box
     // Description Text Box
     // Minimum Shipping Threshold
