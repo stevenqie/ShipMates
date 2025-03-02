@@ -350,3 +350,50 @@
      /* Non-prefixed version, currently
                                       supported by Chrome, Edge, Opera and Firefox */
   }
+
+
+  .page-container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+  }
+  
+  .blurred-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('bg.png'); /* Replace with your PNG URL */
+    background-size: cover;
+    background-position: center;
+    filter: blur(5px); /* Blur only applies to this background element */
+    z-index: 1;
+  }
+  
+  /* Optional dark overlay on top of the blurred background */
+  .blurred-background::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+  }
+  
+  .content-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    z-index: 10; /* Higher z-index to appear above the background */
+  }
+
+  .heading-text {
+    font-family: Helvetica, Arial, sans-serif;
+    font-weight: bold;
+    font-size: 2rem; 
+    color: white; 
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5); 
+  }

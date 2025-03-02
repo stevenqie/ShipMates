@@ -7,7 +7,7 @@ import { getChats } from "@/app/lib/getChats";
 import { getUserInfo } from "@/app/lib/getUserInfo";
 
 export default function Home() {
-  const { username } = useParams(); // ✅ Correctly accessing dynamic params
+  const { username } = useParams(); 
   const router = useRouter();
   const [chatData, setChatData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -50,19 +50,28 @@ export default function Home() {
   }
 
   return (
-    <div className="flex items-center justify-center h-screen">
-      <div>
-        {chatData.map((chat, index) => (
-          <ChatCard
-            key={index}
-            title={chat.title}
-            imageUrl={chat.imageUrl}
-            onClick={() => {
-              console.log(`Navigating to: /chat/${username}/${chat.chatID}`); // ✅ Debugging
-              router.push(`/chat/${username}/${chat.chatID}`);
-            }}
-          />
-        ))}
+    <div className="page-container">
+      {/* Blurred background div */}
+      <div className="blurred-background"></div>
+      
+      {/* Content container - NOT blurred */}
+      <div className="content-container">
+        <div className="flex flex-col items-center justify-center h-screen">
+          <h1 className="heading-text mb-6">Recent Chat Requests</h1>
+          <div>
+            {chatData.map((chat, index) => (
+              <ChatCard
+                key={index}
+                title={chat.title}
+                imageUrl={chat.imageUrl}
+                onClick={() => {
+                  console.log(`Navigating to: /chat/${username}/${chat.chatID}`);
+                  router.push(`/chat/${username}/${chat.chatID}`);
+                }}
+              />
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
