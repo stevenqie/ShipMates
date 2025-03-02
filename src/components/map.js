@@ -36,8 +36,22 @@ async function addMarkerFromLocation(map, address, markersRef) {
         // Create a marker
         const marker = new mapboxgl.Marker()
             .setLngLat([lon, lat])
-            .setPopup(new mapboxgl.Popup().setText(address))
+            .setPopup(new mapboxgl.Popup({ offset: 25 }).setText(address))
             .addTo(map);
+        
+        // Apply inline hover effect
+        const markerEl = marker.getElement();
+        const originalTransform = markerEl.style.transform || '';
+
+        // Set up transition so changes animate smoothly
+        markerEl.style.transition = 'transform 0.3s ease';
+
+        markerEl.addEventListener('mouseenter', () => {
+        markerEl.style.transform = `${originalTransform} scale(1.2)`;
+        });
+        markerEl.addEventListener('mouseleave', () => {
+        markerEl.style.transform = originalTransform;
+        });
 
         markersRef.current.push(marker); // Store marker reference
         console.log(`Marker added at ${lat}, ${lon} for: ${address}`);
@@ -69,6 +83,8 @@ export default function Map({ listings = [], zipcode= '' }) {
             center: center,
             zoom: 12,
         });
+
+        mapInstance.addControl(new mapboxgl.NavigationControl());
 
         setMap(mapInstance)
     }
