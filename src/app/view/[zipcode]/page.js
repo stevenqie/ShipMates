@@ -5,7 +5,7 @@ import { Box, Text } from "@chakra-ui/react";
 import { getActiveListingsByZip } from "@/app/lib/fetchData";
 
 export default async function Home({ params }) {
-  const { zipcode } = await params;
+  const { userID, zipcode } = await params;
   const allListings = await getActiveListingsByZip(zipcode);
 
   return (

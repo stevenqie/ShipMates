@@ -1,6 +1,6 @@
 "use client"
 import React, { useState } from 'react';
-import { storage } from '../../lib/firebaseConfig.js'; // Adjust the path as needed
+import { storage } from '../../../lib/firebaseConfig.js'; // Adjust the path as needed
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import InvoiceForm from './components/InvoiceForm.js'; // Import the new component
 
@@ -38,7 +38,8 @@ async function callParseInvoice(imageName) {
   }
 }
 
-const Page = () => {
+const Page = async ({params}) => {
+  const {userID, chatID} = await params;
   const [image, setImage] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [invoiceData, setInvoiceData] = useState(null);
@@ -111,7 +112,7 @@ const Page = () => {
           </>
         )}
         {invoiceData && (
-          <InvoiceForm invoiceData={invoiceData} />
+          <InvoiceForm invoiceData={invoiceData} userID={userID} chatID={chatID} />
         )}
       </div>
     </div>
