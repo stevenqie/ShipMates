@@ -1,4 +1,3 @@
-"use client"
 import {
         Button,
         DialogRoot, 
@@ -42,6 +41,23 @@ const stateAbbreviations = [
           ];
 
 
+async function sendForm(formValues) {
+    console.log("Form values: " + JSON.stringify(formValues));
+    try {
+        const response = await fetch("/api/listing", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formValues),
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error);
+        alert("Ok!");
+    } catch (error) {
+        alert("Error occurred: " + error);   
+    }
+}
 
 function StateSelector() {
     return (
@@ -179,13 +195,12 @@ function DescriptionForm() {
       </Field>
     );
 }
-export default function AddModalListing() {
+export default function Listing({uname}) {
     const zipcode = 60126;
-
 
     const formRef = useRef({
         listingID: -1, // TODO: This should be server side
-        hostID: -1, // TODO: This should be from auth
+        hostID: uname, // TODO: This should be from auth
         store: "",
         title: "",
         description: "",
@@ -246,7 +261,7 @@ export default function AddModalListing() {
                             <AddressForm formRef={formRef}/>
                         </VStack>
                 </DialogBody>
-                <Button onClick={() => alert(JSON.stringify(formRef.current))}>Submit</Button>
+                <Button onClick={() => {sendForm(formRef.current)} }> </Button>
             </DialogContent>
         </DialogRoot>
     );
