@@ -27,7 +27,7 @@ export default function ChatComponent() {
         });
 
         return () => {
-            socket.emit("disconnect", {});
+            socket.emit("disconn", {});
             socket.disconnect(); 
         };
     }, []);

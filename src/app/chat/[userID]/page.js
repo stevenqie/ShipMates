@@ -1,12 +1,11 @@
 "use client"
 import ChatComponent from '@/components/ChatComponent';
 import React, { useState } from 'react';
-import { storage } from '../../lib/firebaseConfig'; // Adjust the path as needed
+import { storage } from '../../lib/firebaseConfig';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 
 // Replace with your actual function URL from Firebase Console
 const functionUrl = "https://parseinvoice-tayv6iv37a-uc.a.run.app";
-console.log("hello world")
 async function callParseInvoice(imageName) {
   try {
     // Build the query parameter with image_name

@@ -30,9 +30,12 @@ app.prepare().then(() => {
             } else {
                 listingKeyToUsers.set(listingKey, [currentId]);
             }
+
+            console.log("After join " + currentId + " -> ");
+            console.table(listingKeyToUsers);
         });
         
-        socket.on("disconnect", (_) => {
+        socket.on("disconn", (_) => {
             const currentClientList = listingKeyToUsers.get(data.listingKey);
             const otherUserLoggedIn = currentClientList.length == 2;
             if (otherUserLoggedIn) {
@@ -41,18 +44,23 @@ app.prepare().then(() => {
             } else {
                 listingKeyToUsers.delete(data.listingKey);
             }
+
+            console.log("After disconn " + currentId + " -> ");
+            console.table(listingKeyToUsers);
         });
 
         socket.on("message", (data) => {
             console.table(listingKeyToUsers);
             const currentClientList = listingKeyToUsers.get(data.listingKey);
-            const otherUserLoggedIn = currentClientList.length == 2;
+            const otherUserLoggedIn = currentClientList && currentClientList.length == 2;
             if (otherUserLoggedIn) {
                 console.log("Found other user");
                 const otherId = currentClientList[0] == socket.id ? currentClientList[1] : currentClientList[0];
                 io.to(otherId).emit("message", data.msg);
             }
             console.log("TODO: Send msg to DB");
+            console.log("After msg " + data + " -> ");
+            console.table(listingKeyToUsers);
         });
     });
 
