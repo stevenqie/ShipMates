@@ -64,7 +64,7 @@ async function addMarkerFromLocation(map, address, markersRef, onMarkerClick) {
     }
 }
 
-export default function Map({ listings = [], zipcode= '' }) {
+export default function MapComponent({ listings = [], zipcode= '' }) {
   const [map, setMap] = useState(null);
   const [selectedListing, setSelectedListing] = useState(null);
   const mapContainerRef = useRef(null); // This will hold our markers

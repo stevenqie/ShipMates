@@ -4,6 +4,7 @@ import SearchBar from "@/components/Searchbar";
 import { Box, Text } from "@chakra-ui/react";
 import { getActiveListingsByZip } from "@/app/lib/fetchData";
 import { getUser } from "@/app/lib/getUser";
+import MapComponent from "@/components/map";
 export default async function Home({ params }) {
   const { zipcode, username } = await params;
   const allListings = await getActiveListingsByZip(zipcode);
@@ -30,7 +31,7 @@ export default async function Home({ params }) {
           {/* Right Side - Empty for Map Integration */}
           <Box className="w-1/2 bg-gray-50 flex items-center justify-center">
             {/* Map will go here */}
-            <Map listings={allListings} zipcode={zipcode}/>
+            <MapComponent listings={allListings} zipcode={zipcode}/>
           </Box>
         </Box>
       </Box>
