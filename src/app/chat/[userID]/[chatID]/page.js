@@ -105,7 +105,7 @@ const Page = ({ params }) => {
 
   return (
     <HStack width="100vw" height="100vh" spacing={0}>
-      <ChatComponent />
+      <ChatComponent chatID={chatID} userID={userID}/>
       <Flex width="50%" height="100%" p={8} justify="flex-end" direction="column">
         {/* If invoiceData is not set and user is allowed to upload, show the upload UI */}
         {(!invoiceData && allowedUpload) && (
