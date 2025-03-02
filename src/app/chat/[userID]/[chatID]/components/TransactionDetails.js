@@ -10,11 +10,12 @@ import {
   where, 
   getDocs 
 } from 'firebase/firestore';
+import transaction from "lib/api_endpoints.js";
 
 const TransactionDetails = ({ chatID }) => {
   const [listing, setListing] = useState(null);
   const [listingID, setListingID] = useState(null);
-  const [transaction, setTransaction] = useState(null);
+  const [transaction_var, setTransaction] = useState(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [hostID, setHostID] = useState(null);
@@ -86,17 +87,17 @@ const TransactionDetails = ({ chatID }) => {
     return <div>Loading transaction details...</div>;
   }
 
-  if (!transaction) {
+  if (!transaction_var) {
     return <div>No transaction data available.</div>;
   }
 
   // Calculate sum of all item prices using a for loop
   let itemsTotal = 0;
-  for (const item of transaction.personbItems) {
+  for (const item of transaction_var.personbItems) {
     itemsTotal += parseFloat(item.price);
   }
   // Taxes and Fees computed as Grand Total minus the sum of all item prices
-  const taxesAndFees = transaction.grandTotal - itemsTotal;
+  const taxesAndFees = transaction_var.grandTotal - itemsTotal;
 
   const confirmTransaction = async () => {
     if (!listingID) {
@@ -148,7 +149,7 @@ const TransactionDetails = ({ chatID }) => {
       const senderID = userData1.accountID; 
       const receiverID = userData2.accountID; 
 
-      const transferResult = await transaction(senderID, receiverID, String(transaction.personbPaymentAmount.toFixed(2)));
+      const transferResult = await transaction(senderID, receiverID, String(transaction_var.personbPaymentAmount.toFixed(2)));
       if (!transferResult) {
           console.error("Transaction failed");
           alert("Transaction failed");
@@ -186,11 +187,11 @@ const TransactionDetails = ({ chatID }) => {
     <div style={{ padding: "1rem", border: "1px solid #ccc", borderRadius: "4px" }}>
       <h2>Transaction Details</h2>
       <p>
-        <strong>Full Order Amount:</strong> ${transaction.grandTotal.toFixed(2)}
+        <strong>Full Order Amount:</strong> ${transaction_var.grandTotal.toFixed(2)}
       </p>
       <h3>Items:</h3>
       <ul>
-        {transaction.personbItems.map((item, index) => (
+        {transaction_var.personbItems.map((item, index) => (
           <li key={index}>
             {item.name} - ${parseFloat(item.price).toFixed(2)}
           </li>
@@ -203,7 +204,7 @@ const TransactionDetails = ({ chatID }) => {
         <strong>Taxes and Fees:</strong> ${taxesAndFees.toFixed(2)}
       </p>
       <p>
-        <strong>Your Payment Amount:</strong> ${transaction.personbPaymentAmount.toFixed(2)}
+        <strong>Your Payment Amount:</strong> ${transaction_var.personbPaymentAmount.toFixed(2)}
       </p>
       <div style={{ marginTop: "1rem" }}>
         <button
