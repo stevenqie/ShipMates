@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useState, useEffect } from 'react';
 import { db } from '@/app/lib/firebaseConfig'; // Adjust the path as needed
 import { collection, doc, setDoc } from 'firebase/firestore';
@@ -9,9 +9,9 @@ const InvoiceForm = ({ invoiceData, userID, chatID }) => {
   const [subTotal, setSubTotal] = useState(0);
   const [taxesAndFees, setTaxesAndFees] = useState(0);
   const [grandTotal, setGrandTotal] = useState(0);
-  const actualTotal = grandTotal;
   const [couponSavings, setCouponSavings] = useState(invoiceData["Coupon savings"]);
   const [taxes, setTaxes] = useState(invoiceData["Taxes and fees"]);
+  const [initialGrandTotal, setInitialGrandTotal] = useState(0); // Store the initial grand total
 
   function storeTransactionInfo(transaction_info) {
     const userRef = doc(db, "transactions", transaction_info.chatID);
@@ -33,7 +33,13 @@ const InvoiceForm = ({ invoiceData, userID, chatID }) => {
     });
     setCheckedItems(initialCheckedItems);
     setItems(initialItems);
-  }, [invoiceData]);
+
+    // Calculate the initial grand total with all items checked
+    const initialSubTotal = initialItems.reduce((sum, item) => sum + parseFloat(item.price), 0);
+    const initialTaxesAndFees = (initialSubTotal / invoiceData["Sub total"]) * parseFloat(taxes);
+    const initialGrandTotal = initialSubTotal + initialTaxesAndFees - Math.abs(parseFloat(couponSavings));
+    setInitialGrandTotal(initialGrandTotal);
+  }, [invoiceData, taxes, couponSavings]);
 
   useEffect(() => {
     // Calculate totals whenever checkedItems or items change
@@ -86,13 +92,15 @@ const InvoiceForm = ({ invoiceData, userID, chatID }) => {
     try {
       // Get the unchecked items for personb
       const personbItems = items.filter((_, index) => !checkedItems[index]);
-      const personbPaymentAmount = personbItems.reduce((sum, item) => sum + parseFloat(item.price), 0);
+      const personbSubTotal = personbItems.reduce((sum, item) => sum + parseFloat(item.price), 0);
+      const personbTaxesAndFees = (personbSubTotal / invoiceData["Sub total"]) * parseFloat(taxes);
+      const personbPaymentAmount = personbSubTotal + personbTaxesAndFees;
 
       const formData = {
         chatID: chatID,
         personbItems: personbItems,
         personbPaymentAmount: personbPaymentAmount,
-        grandTotal: actualTotal
+        grandTotal: initialGrandTotal // Use the initial grand total
       };
 
       await storeTransactionInfo(formData);

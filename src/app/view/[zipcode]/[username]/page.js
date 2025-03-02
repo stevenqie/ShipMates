@@ -24,6 +24,7 @@ export default async function Home({ params }) {
                 key={index}
                 index={index}
                 listing={listing}
+                currentUser={username}
               />
               ))}
             </Box>

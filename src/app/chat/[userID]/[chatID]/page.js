@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { storage } from '../../../lib/firebaseConfig.js'; // Adjust the path as needed
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { HStack } from '@chakra-ui/react';
@@ -7,13 +7,10 @@ import InvoiceForm from './components/InvoiceForm.js'; // Import the new compone
 
 // Replace with your actual function URL from Firebase Console
 const functionUrl = "https://parseinvoice-tayv6iv37a-uc.a.run.app";
-console.log("hello world")
+
 async function callParseInvoice(imageName) {
   try {
-    // Build the query parameter with image_name
     const url = `${functionUrl}?image_name=${encodeURIComponent(imageName)}`;
-
-    // Make a GET request to your Cloud Function
     const response = await fetch(url, {
       method: "GET",
       headers: {
@@ -22,32 +19,38 @@ async function callParseInvoice(imageName) {
     });
 
     if (!response.ok) {
-      // Handle HTTP errors
       const errorText = await response.text();
       throw new Error(`Request failed: ${response.status} - ${errorText}`);
     }
 
-    // Parse the JSON response
     const data = await response.json();
     console.log("Parsed invoice data:", data);
-
-    // Do something with the result...
     return data;
   } catch (error) {
     console.error("Error calling parseInvoice function:", error);
-    throw error; // or handle the error in your UI
+    throw error;
   }
 }
 
-const Page = async ({params}) => {
-  const {userID, chatID} = await params;
+const Page = ({ params }) => {
+  const [userID, setUserID] = useState(null);
+  const [chatID, setChatID] = useState(null);
   const [image, setImage] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [invoiceData, setInvoiceData] = useState(null);
 
+  useEffect(() => {
+    params.then(({ userID, chatID }) => {
+      setUserID(userID);
+      setChatID(chatID);
+    });
+  }, [params]);
+
   const handleImageUpload = (event) => {
+    if (!event) {
+      return;
+    }
     const file = event.target.files[0];
-    console.log("image")
     if (file) {
       const storageRef = ref(storage, `invoices/${file.name}`);
       const uploadTask = uploadBytesResumable(storageRef, file);
@@ -62,13 +65,10 @@ const Page = async ({params}) => {
           console.error('Upload failed', error);
         },
         () => {
-          console.log('Upload successful');
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
             setImage(downloadURL);
-            // Call the parseInvoice function here
             callParseInvoice(file.name)
               .then((result) => {
-                console.log("Function result:", result);
                 setInvoiceData(result);
               })
               .catch((err) => {
@@ -82,8 +82,8 @@ const Page = async ({params}) => {
 
   return (
     <HStack>
-    <div style={{ display: 'flex', height: '100vh' }}>
-      <div style={{ flex: 1 }}></div>
+      <div style={{ display: 'flex', height: '100vh' }}>
+        <div style={{ flex: 1 }}></div>
         {!invoiceData && (
           <>
             <h2>Upload Screenshot of Cart Details</h2>
@@ -112,11 +112,10 @@ const Page = async ({params}) => {
             {uploadProgress > 0 && <p>Upload Progress: {uploadProgress}%</p>}
           </>
         )}
-        {invoiceData && (
+        {invoiceData && userID && chatID && (
           <InvoiceForm invoiceData={invoiceData} userID={userID} chatID={chatID} />
         )}
       </div>
-      <ChatComponent/>
     </HStack>
   );
 };
