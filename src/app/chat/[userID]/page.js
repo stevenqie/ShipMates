@@ -1,4 +1,5 @@
 "use client"
+import ChatComponent from '@/components/ChatComponent';
 import React, { useState } from 'react';
 
 const Page = () => {
@@ -13,7 +14,7 @@ const Page = () => {
 
   return (
     <div style={{ display: 'flex', height: '100vh' }}>
-      <div style={{ flex: 1 }}></div>
+      <ChatComponent/>
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
         <h2>Upload Screenshot of Cart Details</h2>
         <div style={{ border: '2px solid #000', padding: '10px', borderRadius: '5px' }}>
