@@ -5,6 +5,7 @@ import Script from "next/script";
 import {jwtDecode} from "jwt-decode"; // Import JWT decoding library
 import { useRouter } from 'next/navigation';
 import { Router } from "next/router";
+import { getUser } from "@/app/lib/getUser";
 
 export default function LoginForm({ className }) {
   const [userEmail, setUserEmail] = useState(null);
@@ -20,7 +21,16 @@ export default function LoginForm({ className }) {
       router.push(`/register?email=${encodeURIComponent(decoded.email)}&pfp=${encodeURIComponent(decoded.picture)}`);
     } else {
       const zippy = JSON.parse(zip)
-      router.push(`/view/${zippy}`);
+      const uname = await getUser(decoded.email);
+      console.log("User's name: ", uname);
+
+      if (uname) {
+        router.push(`/view/${zippy}/${uname}`);
+      } else {
+        console.error("User's username not found.");
+      }
+
+      router.push(`/view/${zippy}/${uname}`);
     }
     
   }
@@ -36,24 +46,26 @@ export default function LoginForm({ className }) {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className={cn("flex flex-col gap-6", className)}>
-        <button className="flex items-center gap-2 border px-4 py-2 rounded-md shadow-md">
-          <img src="https://www.vectorlogo.zone/logos/google/google-icon.svg" alt="Google" className="w-5 h-5" />
-          Login with Google
-        </button>
-        <div className="light-button">
-        <button className="bt">
-          <div className="light-holder">
-            <div className="dot" />
-            <div className="light" />
-          </div>
-          <div className="button-holder">
-            <p>LeBron James</p>
-          </div>
-        </button>
+    <>
+      <Script src="https://accounts.google.com/gsi/client" strategy="afterInteractive" />
+      
+      <div className="flex items-center justify-center min-h-screen">
+        <div className={`flex flex-col gap-6 ${className}`}>
+          <button
+            onClick={handleLoginClick}
+            className="flex items-center gap-2 border px-4 py-2 rounded-md shadow-md"
+          >
+            <img
+              src="https://www.vectorlogo.zone/logos/google/google-icon.svg"
+              alt="Google"
+              className="w-5 h-5"
+            />
+            Login with Google
+          </button>
+
+          {userEmail && <p>Logged in as: {userEmail}</p>}
+        </div>
       </div>
-      </div>
-    </div>
+    </>
   );
 }

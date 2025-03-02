@@ -1,5 +1,4 @@
 'use client'
-
 import { useState } from "react";
 import { db } from "../lib/firebaseConfig.js";
 import { doc, setDoc } from "firebase/firestore";
@@ -16,14 +15,14 @@ function cn(...classes) {
 //username, firstName, lastName, profilePictureURL, email, phoneNumber, bio, rating, completedOrders, addresses
 //addresses should be a list of json objects with the following fields:
 //street, city, state, zip, isPrimary
-export function storeUserData(userdata) {
+function storeUserData(userdata) {
     const userRef = doc(db, "users", userdata.username);
   
     return setDoc(userRef, {
       username: userdata.username,
       firstName: userdata.firstName,
       lastName: userdata.lastName,
-      //profilePictureURL: userdata.profilePictureURL,
+      profilePictureURL: userdata.profilePictureURL,
       email: userdata.email,
       phoneNumber: userdata.phoneNumber,
       bio: userdata.bio,
@@ -43,7 +42,8 @@ export default function LoginForm({ className }) {
     username: "",
     firstName: "",
     lastName: "",
-    email:"",
+    email:emailp,
+    profilePictureURL: profilepic,
     phoneNumber: "",
     bio: "",
     rating: 0,
@@ -59,8 +59,8 @@ export default function LoginForm({ className }) {
 
     // Phone Number Validation: Must be exactly 10 digits
     const phoneRegex = /^\d{10}$/;
-    if (!phoneRegex.test(formData.phone)) {
-      newErrors.phone = "Phone number must be exactly 10 digits.";
+    if (!phoneRegex.test(formData.phoneNumber)) {
+      newErrors.phoneNumber = "Phone number must be exactly 10 digits.";
     }
 
     // ZIP Code Validation: Exactly 5 digits
@@ -84,7 +84,7 @@ export default function LoginForm({ className }) {
         await storeUserData(userData);  // Await Firestore operation
         console.log("User Data JSON:", JSON.stringify(userData, null, 2));
         alert("Registration successful!");
-        router.push(`/view/${userData.addresses}`);
+        router.push(`/view/${userData.addresses}/${userData.username}`);
       } catch (error) {
         console.error("Error storing user data:", error);
         alert("Registration failed! Please try again.");
@@ -94,8 +94,8 @@ export default function LoginForm({ className }) {
   
   const handleChange = (e) => {
     const { name, value } = e.target;
-    // Strip out non-digit characters for the phone input
-    if (name === "phone") {
+    // Strip out non-digit characters for the phoneNumber input
+    if (name === "phoneNumber") {
       setFormData({ ...formData, [name]: value.replace(/\D/g, "") }); // Remove all non-digit characters
     } else {
       setFormData({ ...formData, [name]: value });
@@ -113,7 +113,7 @@ export default function LoginForm({ className }) {
             <input
               name="username"
               placeholder="Enter your Username"
-              className="input placeholder-gray-500 text-black"
+              className="input placeholder-black text-black"
               type="text"
               value={formData.username}
               onChange={handleChange}
@@ -153,23 +153,23 @@ export default function LoginForm({ className }) {
           </div>
           <div className="inputForm">
             <input
-              name="phone"
+              name="phoneNumber"
               placeholder="Enter your 10-digit Phone Number"
               className="input placeholder-gray-500 text-black"
               type="text"
-              value={formData.phone}
+              value={formData.phoneNumber}
               onChange={handleChange}
               maxLength="10" // Prevents input longer than 10 digits
             />
           </div>
-          {errors.phone && <p className="text-red-500">{errors.phone}</p>}
+          {errors.phoneNumber && <p className="text-red-500">{errors.phoneNumber}</p>}
 
           <div className="flex-column">
             <label>Zip Code</label>
           </div>
           <div className="inputForm">
             <input
-              name="zip"
+              name="addresses"
               placeholder="Enter your Zip Code"
               className="input placeholder-gray-500 text-black"
               type="text"
@@ -183,16 +183,7 @@ export default function LoginForm({ className }) {
             Register
           </button>
         </form>
-
-        {submittedData && (
-          <div className="mt-4 p-3 border rounded bg-gray-100">
-            <h3 className="font-semibold">Submitted Data:</h3>
-            <pre className="text-sm">{JSON.stringify(submittedData, null, 2)}</pre>
-          </div>
-        )}
       </div>
     </div>
   );
 }
-
-

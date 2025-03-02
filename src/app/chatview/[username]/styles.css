@@ -8,8 +8,8 @@
   }
   
   .container:active {
-    width: 180px;
-    height: 245px;
+    width: 400px;
+    height: 100px;
   }
   
   #card {
