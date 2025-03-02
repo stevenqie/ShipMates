@@ -10,7 +10,7 @@ import {
   where, 
   getDocs 
 } from 'firebase/firestore';
-import transaction from "lib/api_endpoints.js";
+import { transaction } from '../../../../../../lib/api_endpoints';
 
 const TransactionDetails = ({ chatID }) => {
   const [listing, setListing] = useState(null);
