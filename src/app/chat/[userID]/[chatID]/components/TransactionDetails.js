@@ -204,7 +204,7 @@ const TransactionDetails = ({ chatID }) => {
       <div className="compact-item-row-two">
       <strong>Sub total:</strong> ${itemsTotal.toFixed(2)}<br />
       <strong>Taxes and Fees:</strong> ${taxesAndFees.toFixed(2)}<br />
-      <strong>Your Payment Amount:</strong> ${transaction.personbPaymentAmount.toFixed(2)}
+      <strong>Your Payment Amount:</strong> ${transaction_var.personbPaymentAmount.toFixed(2)}
       </div>
  
       <div style={{ marginTop: "1rem", display: "flex", justifyContent: "center" }}>

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-const API_KEY = "309a844675e8f5c82d723fe65a6ae49d";
+const API_KEY = "";
 const API_BASE_URL = "http://api.nessieisreal.com";
 
 export async function GET(request, {params}) {

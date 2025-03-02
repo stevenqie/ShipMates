@@ -7,7 +7,7 @@ import { Button } from "@chakra-ui/react";
 import ListingView from './ListingView';
 
 // Replace with your own Mapbox token
-mapboxgl.accessToken = 'pk.eyJ1Ijoic3RldmVucWllIiwiYSI6ImNtMzk2MHRlcjB6aXAya3B3ZnMwZmp0eWcifQ.LZpQC7xRtVKDfD56Up-3zQ';
+mapboxgl.accessToken = '';
 
 async function fetchCoordinates(zipcode) {
     const response = await fetch(

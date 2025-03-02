@@ -38,7 +38,7 @@ export default function LoginForm({ className }) {
   function handleLoginClick() {
     if (window.google) {
       window.google.accounts.id.initialize({
-        client_id: '946410029671-chhtav0s9b4k4duidtubjb3fi0bd2qpm.apps.googleusercontent.com',
+        client_id: '',
         callback: handleCredentialResponse,
       });
       window.google.accounts.id.prompt(); // Show the Google Sign-In prompt
