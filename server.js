@@ -2,6 +2,10 @@ import { createServer } from "node:http";
 import next from "next";
 import { Server } from "socket.io";
 
+
+import { db } from "./src/app/lib/firebaseConfig.js";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
 const port = 3000;
@@ -10,68 +14,95 @@ const app = next({ dev, hostname, port });
 const handler = app.getRequestHandler();
 
 let count = 0;
+
+async function postChatMessageToDB (
+    chatID,
+    username,
+    msg
+) {
+    const time = serverTimestamp();
+    try {
+        await addDoc(collection(db, "chats"), {
+            chatID: chatID,
+            username: username,
+            message: msg,
+            timestamp: time
+        });
+    } catch (error) {
+        console.error("Failed to write msg to db: " +error);
+    }
+}
 app.prepare().then(() => {
     const httpServer = createServer(handler);
 
     const io = new Server(httpServer);
 
    
-    const listingKeyToUsers = new Map();
-    const userToListingKey = new Map();
+    const chatIDToSocketIDs = new Map();
+    const socketIDToChatID= new Map();
+    const socketIDToUserID = new Map();
 
+    const userToListingKey = new Map();
     io.on("connection", (socket) => {
-        const currentId = socket.id;
+        const socketID = socket.id;
         
         count += 1;
 
-        socket.on("join", (listingKey) => {
-            const listingKeyString = JSON.stringify(listingKey);
-            const otherUserLoggedIn = listingKeyToUsers.has(listingKeyString);
+        socket.on("join", (joinJSON) => {
+            const chatID = joinJSON.chatID;
+            const userID = joinJSON.userID;
+
+            const otherUserLoggedIn = chatIDToSocketIDs.has(chatID);
 
             if (otherUserLoggedIn) {
-                listingKeyToUsers.get(listingKeyString).push(currentId);
+                chatIDToSocketIDs.get(chatID).push(socketID);
             } else {
-                listingKeyToUsers.set(listingKeyString, [currentId]);
+                chatIDToSocketIDs.set(chatID, [socketID]);
             }
-            userToListingKey.set(currentId, listingKeyString);
+            socketIDToChatID.set(socketID, chatID);
+            socketIDToUserID.set(socketID, userID);
 
-            console.log("After join " + currentId +  "(other logged in): " + otherUserLoggedIn + "  -> ");
-            console.table(listingKeyToUsers);
+            console.log("After join " + socketID +  "(other logged in): " + otherUserLoggedIn + "  -> ");
+            console.table(chatIDToSocketIDs);
+            console.table(socketIDToChatID);
+            console.table(socketIDToUserID);
         });
         
         socket.on("disconnect", (_) => {
-            const listingKeyString = userToListingKey.get(currentId);
-            if (!listingKeyString) {
-                return;
+            const chatID = socketIDToChatID.get(socketID);
+            if (chatIDToSocketIDs.has(chatID)) {
+                const activeUsers = chatIDToSocketIDs.get(chatID);
+                activeUsers.splice(activeUsers[1] == socketID, 1);
             }
 
-            const currentClientList = listingKeyToUsers.get(listingKeyString);
-            const otherUserLoggedIn = currentClientList && currentClientList.length == 2;
-            if (otherUserLoggedIn) {
-                const idxToDel = currentClientList.findIndex(currentId);
-                currentClientList.splice(idxToDel, 1);
-            } else {
-                console.log("Full delete");
-                listingKeyToUsers.delete(listingKeyString);
+            if (socketIDToChatID.has(socketID)) {
+                socketIDToChatID.delete(socketID);
             }
 
-            console.log("After disconnect " + currentId + " -> ");
-            console.table(listingKeyToUsers);
+            if (socketIDToUserID.has(socketID)) {
+                socketIDToUserID.delete(socketID);
+            }
+
+            console.log("After disconnect " + socketID);
+            console.table(chatIDToSocketIDs);
+            console.table(socketIDToChatID);
+            console.table(socketIDToUserID);
+
         });
 
         socket.on("message", (msg) => {
-            const listingKeyString = userToListingKey.get(currentId);
-            console.log(JSON.stringify(msg));
-            const currentClientList = listingKeyToUsers.get(listingKeyString);
-            const otherUserLoggedIn = currentClientList && currentClientList.length == 2;
-            if (otherUserLoggedIn) {
-                console.log("Found other user");
-                const otherId = currentClientList[0] == socket.id ? currentClientList[1] : currentClientList[0];
-                io.to(otherId).emit("message", msg);
+            console.log("Received msg: " + msg);
+            const chatID = socketIDToChatID.get(socketID); 
+            const userID = socketIDToUserID.get(socketID);
+            const activeUsers = chatIDToSocketIDs.get(chatID);
+
+            if (activeUsers.length == 2) { // other user online
+                const index = activeUsers[0] == socketID ? 1 : 0;
+                console.log("Sending to " + activeUsers[index]);
+                socket.to(activeUsers[index]).emit("message", msg); 
             }
-            console.log("TODO: Send msg to DB");
-            console.log("After msg " + msg + " -> ");
-            console.table(listingKeyToUsers);
+
+            postChatMessageToDB(chatID, userID, msg);
         });
     });
 

@@ -21,19 +21,18 @@ const ChatMessage = ({ message, isSender = false }) => {
     </Flex>
   );
 };
-export default function ChatComponent() {
+export default function ChatComponent({chatID, userID}) {
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState("");
 
-    const listingId = 12;
-    const counterpartyId = 111;
-
-    const listingKey = {
-        listingId: listingId,
-        counterpartyId: counterpartyId
-    }
 
     useEffect(() => {
+        if (!chatID || !userID) return;
+
+        const joinMsg = {
+            chatID: chatID,
+            userID: userID
+        }
         // Listen for incoming messages
         socket.on("message", (message) => {
             const newMsg = {
@@ -43,13 +42,14 @@ export default function ChatComponent() {
             setMessages((prev) => [...prev, newMsg]); // Update state with new messages
         });
 
-        socket.emit("join", listingKey);
+
+        socket.emit("join", joinMsg);
 
         return () => {
-            socket.emit("disconn", listingKey);
+            socket.emit("disconn", chatID);
             socket.disconnect();
         };
-    }, []);
+    }, [chatID, userID]);
 
     const sendMessage = () => {
         const newMsg = {
@@ -82,6 +82,7 @@ export default function ChatComponent() {
           />
           <Button flex={2} onClick={sendMessage}>Send</Button>
       </HStack>
+      <p>{chatID}, {userID}</p>
     </VStack>
     </Flex>
   );

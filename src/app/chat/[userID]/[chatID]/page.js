@@ -55,7 +55,8 @@ const Page = ({ params }) => {
         if (chatDoc.exists()) {
           const data = chatDoc.data();
           // Render upload only if the current user is the host
-          setAllowedUpload(data.hostID === userID);
+          const userIsHost = (data.hostID === userID); 
+          setAllowedUpload(userIsHost); 
         } else {
           setAllowedUpload(false);
         }
@@ -92,7 +93,7 @@ const Page = ({ params }) => {
 
   return (
     <HStack width="100vw" height="100vh" spacing={0}>
-        <ChatComponent/>
+        <ChatComponent chatID={chatID} userID={userID}/>
         <Flex width="50%" height="100%" p={8} justify="flex-end">
         {(!invoiceData && allowedUpload) && (
           <>
