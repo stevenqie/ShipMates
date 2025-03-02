@@ -13,13 +13,14 @@ from firebase_admin import initialize_app, firestore, credentials, storage
 import google.cloud.firestore
 
 load_dotenv()
+
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 openai.api_key = OPENAI_API_KEY
 
 def extract_image_info(image_name):
     pytesseract.pytesseract.tesseract_cmd = "C:/Program Files/Tesseract-OCR/tesseract.exe"
 
-    cred = credentials.Certificate("hackillinois25/service_account_key.json")
+    cred = credentials.Certificate("service_account_key.json")
     firebase_admin.initialize_app(cred, {
         'storageBucket': 'hack-illinois-2025.firebasestorage.app'
     })
@@ -62,6 +63,7 @@ def run_LLM(image_text):
     chain = LLMChain(llm=llm, prompt=prompt_template)
     output = chain.run({"image_text": image_text})
     return output
+
 
 @https_fn.on_request()
 def parseInvoice(req):

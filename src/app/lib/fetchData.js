@@ -9,8 +9,13 @@ async function getActiveListingsByZip(zipCode) {
         where("location.zip", "==", zipCode),
     );
     const snapshot = await getDocs(listingsQuery);
+    console.log("hi");
+    snapshot.docs.forEach((doc) => {
+        console.log(doc.data().hostID);
+    });
     return snapshot.docs.map((doc) => ({ 
-        id: doc.data().id, 
+        listingID: doc.data().listingID,
+        hostID: doc.data().hostID, 
         title: doc.data().title,
         // TODO: Fetch user's name
         store: doc.data().store,
@@ -18,6 +23,8 @@ async function getActiveListingsByZip(zipCode) {
         minPurchaseRequired: doc.data().minPurchaseRequired,
         currentTotal: doc.data().currentTotal,
         location: doc.data().location,
+        createdAt : doc.data().createdAt.toDate(),
+        status: doc.data().status
         // TODO: Fetch avg rating
         // TODO: Fetch num reviews
     }));
