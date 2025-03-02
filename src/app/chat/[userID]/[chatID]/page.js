@@ -89,16 +89,12 @@ const Page = ({ params }) => {
     }
   };
 
-  // If not allowed, render nothing (white screen)
-  if (allowedUpload === false) {
-    return <></>;
-  }
 
   return (
     <HStack width="100vw" height="100vh" spacing={0}>
         <ChatComponent/>
         <Flex width="50%" height="100%" p={8} justify="flex-end">
-        {!invoiceData && (
+        {(!invoiceData && allowedUpload) && (
           <>
             <h2>Upload Screenshot of Cart Details</h2>
             <div style={{ border: '2px solid #000', padding: '10px', borderRadius: '5px' }}>
