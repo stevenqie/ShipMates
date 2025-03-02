@@ -201,8 +201,8 @@ export default function AddModalListing() {
 
 
     const formRef = useRef({
-        listingId: -1, // TODO: This should be server side
-        hostId: -1, // TODO: This should be from auth
+        listingID: -1, // TODO: This should be server side
+        hostID: -1, // TODO: This should be from auth
         store: "",
         title: "",
         description: "",
