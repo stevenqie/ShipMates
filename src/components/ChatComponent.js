@@ -2,23 +2,23 @@
 
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
-import { Button, Box, Text, VStack, HStack } from "@chakra-ui/react";
+import { Button, Input, Text, Flex, HStack, VStack } from "@chakra-ui/react";
 
 const socket = io("http://localhost:3000"); // Connect to the WebSocket server
 const ChatMessage = ({ message, isSender = false }) => {
   return (
-    <Box
+    <Flex
       bg={isSender ? "blue.500" : "gray.200"}
       color={isSender ? "white" : "black"}
       maxW="75%"
       p={3}
       rounded="md"
-      alignSelf={isSender ? "flex-end" : "flex-start"}
+      alignSelf={isSender ? "end" : "start"}
       mt={2}
       boxShadow="md"
     >
-      <Text>{message}</Text>
-    </Box>
+      {message}
+    </Flex>
   );
 };
 export default function ChatComponent() {
@@ -66,30 +66,23 @@ export default function ChatComponent() {
   };
 
   return (
-    <VStack
-        spacing={4} 
-        position="fixed" 
-        bottom="0" 
-        left="0" 
-        minH="100%"
-        bg="black" 
-        p={4}
-      >
-      <div>
+
+    <Flex width="50%" height="100%" align="end" justify="center" pb={10} bg="gray.100"> 
+        <VStack width="100%" px={8} py={4}>
         {messages.map((msg, index) => (
             <ChatMessage key={index} message={msg.message} isSender={msg.isSender}/>
         ))}
-      </div>
-      <HStack>
-          <input
+      <HStack width="100%" height="40px">
+          <Input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Type a message..."
-            width="100%"
+            style={{flex: 10, height: "100%"}}
           />
-          <Button onClick={sendMessage}>Send</Button>
+          <Button flex={2} onClick={sendMessage}>Send</Button>
       </HStack>
     </VStack>
+    </Flex>
   );
 }
