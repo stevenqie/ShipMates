@@ -3,7 +3,7 @@ import ChatComponent from '@/components/ChatComponent';
 import React, { useState } from 'react';
 import { storage } from '../../lib/firebaseConfig';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-
+import { HStack } from '@chakra-ui/react';
 // Replace with your actual function URL from Firebase Console
 const functionUrl = "https://parseinvoice-tayv6iv37a-uc.a.run.app";
 async function callParseInvoice(imageName) {
@@ -76,8 +76,7 @@ const Page = () => {
   };
 
   return (
-    <div style={{ display: 'flex', height: '100vh' }}>
-      <ChatComponent/>
+    <HStack>
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
         <h2>Upload Screenshot of Cart Details</h2>
         <div style={{ border: '2px solid #000', padding: '10px', borderRadius: '5px' }}>
@@ -105,7 +104,8 @@ const Page = () => {
         {uploadProgress > 0 && <p>Upload Progress: {uploadProgress}%</p>}
         {image && <img src={image} alt="Uploaded" style={{ marginTop: '20px', maxWidth: '100%', maxHeight: '100%' }} />}
       </div>
-    </div>
+      <ChatComponent/>
+    </HStack>
   );
 };
 
