@@ -5,11 +5,21 @@ import { Box, Button, Input, Text, Image, Flex } from "@chakra-ui/react";
 import { useRouter } from 'next/navigation';
 
 export default function SearchBar({zipcode, uname}) {
+    const [newZipcode, setNewZipcode] = useState(zipcode || "");
+
+    const handleZipcodeEnter = (e) => {
+        setNewZipcode(e.target.value);
+    };
     const router = useRouter();
     const handleViewChat = async (e) => {
         e.preventDefault();
         router.push(`/chatview/${uname}`);
 
+    }
+    
+    const handleZipcodeChange = async (e, newZipcode) => {
+        e.preventDefault();
+        router.push(`/view/${newZipcode}/${uname}`);
     }
     return (
         <Box 
@@ -27,8 +37,10 @@ export default function SearchBar({zipcode, uname}) {
             <Box className="search-lhs" display="flex" gap="4">
                 <Input 
                     w="40"
-                    placeholder={zipcode}/>
-                <Button>Search!</Button>
+                    placeholder={zipcode}
+                    onChange={handleZipcodeEnter}
+                />
+                <Button onClick={(e) => {handleZipcodeChange(e, newZipcode)}}>Search!</Button>
             </Box>
 
             <Flex align="center">
