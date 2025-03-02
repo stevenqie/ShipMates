@@ -27,7 +27,7 @@ export default async function Home({ params }) {
           {/* Right Side - Empty for Map Integration */}
           <Box className="w-1/2 bg-gray-50 flex items-center justify-center">
             {/* Map will go here */}
-              <Map listings={[allListings]}/>
+              <Map listings={allListings} zipcode={zipcode}/>
           </Box>
         </Box>
       </Box>
