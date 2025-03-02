@@ -124,7 +124,7 @@ export default function MapComponent({ listings = [], zipcode= '', currentUser='
             setSelectedListing(listing);
         });
     });
-  }, [map, listings]);
+  }, [map, listings, zipcode]);
 
   return (
         <>
