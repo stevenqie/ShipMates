@@ -1,13 +1,13 @@
 "use client"
 import { useState } from "react";
 import AddModalListing from "./AddModalListing";
-import { Box, Button, Input } from "@chakra-ui/react";
+import { Box, Button, Input, Text, Image, Flex } from "@chakra-ui/react";
 
 export default function SearchBar({zipcode}) {
     return (
         <Box 
             w="full"
-            h="14"
+            h="16"
             bg="gray.100"
             display="flex"
             alignItems="center"
@@ -16,8 +16,6 @@ export default function SearchBar({zipcode}) {
             borderBottom="1px solid"
             borderColor="gray.200"
         >
-
-
             {/* Search/Filter Controls needs server side*/}
             <Box className="search-lhs" display="flex" gap="4">
                 <Input 
@@ -25,6 +23,23 @@ export default function SearchBar({zipcode}) {
                     placeholder={zipcode}/>
                 <Button>Search!</Button>
             </Box>
+
+            <Flex align="center">
+                <Text fontSize="lg" fontWeight="bold" color="gray.700">
+                    What's In Your Cart,
+                </Text>
+                <Text fontSize="md" fontWeight="medium" color="gray.600" ml="2">
+                    Powered By
+                </Text>
+                <Image
+                src="https://1000logos.net/wp-content/uploads/2018/11/Capital-One-Logo.png"
+                alt="Capital One"
+                maxH="10"
+                objectFit="contain"
+                ml="2"
+                />
+            </Flex>
+
 
             <AddModalListing/>
         </Box>
