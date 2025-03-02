@@ -24,15 +24,15 @@ export default async function Home({ params }) {
                 index={index}
                 listing={listing}
               />
-            ))}
+              ))}
+            </Box>
+          </Box>
+          {/* Right Side - Empty for Map Integration */}
+          <Box className="w-1/2 bg-gray-50 flex items-center justify-center">
+            {/* Map will go here */}
+            <Map listings={allListings} zipcode={zipcode}/>
           </Box>
         </Box>
-        {/* Right Side - Empty for Map Integration */}
-        <Box className="w-1/2 bg-gray-50 flex items-center justify-center">
-          {/* Map will go here */}
-          TODO: Add map
-        </Box>
       </Box>
-    </Box>
-  );
+    );
 }
