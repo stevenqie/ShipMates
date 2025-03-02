@@ -1,7 +1,9 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import { db } from '@/app/lib/firebaseConfig'; // Adjust the path as needed
-import { collection, doc, setDoc } from 'firebase/firestore';
+import { collection, doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
+import './style.css'
+
 
 const InvoiceForm = ({ invoiceData, userID, chatID }) => {
   const [checkedItems, setCheckedItems] = useState({});
@@ -105,9 +107,17 @@ const InvoiceForm = ({ invoiceData, userID, chatID }) => {
 
       await storeTransactionInfo(formData);
       // Clear the screen
-      document.body.innerHTML = '';
+      //document.body.innerHTML = '';
       // Create a pop-up with "Hello World"
+      console.log("hi")
       alert("Success! Order details are being sent to the other user. Please do not pay until the other user confirms.");
+      // Assuming the listingID is the same as chatID and that the listings collection exists
+      // Use chatID in chatMetadata to obtain the listingID to use in listings
+      const chatMetadataRef = doc(db, "chatMetadata", chatID);
+      const chatMetadataSnap = await getDoc(chatMetadataRef);
+      const listingID = chatMetadataSnap.data()?.listingID;
+      const listingRef = doc(db, "listings", listingID);
+      await updateDoc(listingRef, { status: "pending" });
       console.log("Document written with ID: ", chatID);
 
     } catch (e) {
@@ -116,56 +126,85 @@ const InvoiceForm = ({ invoiceData, userID, chatID }) => {
   };
 
   return (
-    <div style={{ marginTop: '20px' }}>
-      <h3>Select your items from submitted invoice</h3>
+    <div className="compact-invoice-container">
+      <h2 className="compact-form-title">Select your items</h2>
+      
       <form onSubmit={handleSubmit}>
-        {items.map((item, index) => (
-          <div key={index}>
-            <input
-              type="checkbox"
-              checked={checkedItems[index] || false}
-              onChange={() => handleCheckboxChange(index)}
-            />
-            <input
-              type="text"
-              value={item.name}
-              onChange={(e) => handleItemChange(index, 'name', e.target.value)}
-              style={{ marginRight: '10px' }}
-            />
-            <input
-              type="number"
-              value={item.price}
-              onChange={(e) => handleItemChange(index, 'price', e.target.value)}
-              style={{ marginRight: '10px' }}
-            />
+        <div className="compact-layout">
+          <div className="compact-items-container">
+            {items.map((item, index) => (
+              <div key={index} className="compact-item-row">
+                <label className="compact-checkbox-container">
+                  <input
+                    type="checkbox"
+                    checked={checkedItems[index] || false}
+                    onChange={() => handleCheckboxChange(index)}
+                  />
+                  <span className="compact-checkmark"></span>
+                </label>
+                <input
+                  type="text"
+                  value={item.name}
+                  onChange={(e) => handleItemChange(index, 'name', e.target.value)}
+                  className="compact-item-input"
+                />
+                <div className="compact-price-container">
+                  <span className="compact-currency">$</span>
+                  <input
+                    type="number"
+                    value={item.price}
+                    onChange={(e) => handleItemChange(index, 'price', e.target.value)}
+                    className="compact-price-input"
+                    step="0.01"
+                  />
+                </div>
+              </div>
+            ))}
+            <button type="button" onClick={addItem} className="compact-add-btn">+ Add</button>
           </div>
-        ))}
-        <button type="button" onClick={addItem} style={{ marginTop: '10px' }}>+ Add Item</button>
-        <div>
-          <label>Coupon savings: </label>
-          <input
-            type="number"
-            value={couponSavings}
-            onChange={(e) => handleCouponSavingsChange(e.target.value)}
-            style={{ marginRight: '10px' }}
-          />
+          
+          <div className="compact-summary-container">
+            <div className="compact-coupon-row">
+              <label>Coupon:</label>
+              <div className="compact-price-container">
+                <span className="compact-currency">$</span>
+                <input
+                  type="number"
+                  value={couponSavings}
+                  onChange={(e) => handleCouponSavingsChange(e.target.value)}
+                  className="compact-coupon-input"
+                  step="0.01"
+                />
+              </div>
+            </div>
+            
+            <div className="compact-summary-row">
+              <label>Sub-total:</label>
+              <span>${subTotal.toFixed(2)}</span>
+            </div>
+            
+            <div className="compact-taxes-row">
+              <label>Taxes:</label>
+              <div className="compact-price-container">
+                <span className="compact-currency">$</span>
+                <input
+                  type="number"
+                  value={taxes}
+                  onChange={(e) => handleTaxesChange(e.target.value)}
+                  className="compact-taxes-input"
+                  step="0.01"
+                />
+              </div>
+            </div>
+            
+            <div className="compact-total-row">
+              <label>Grand total:</label>
+              <span>${grandTotal.toFixed(2)}</span>
+            </div>
+            
+            <button type="submit" className="compact-submit-btn">Submit</button>
+          </div>
         </div>
-        <div>
-          <label>Sub-total: ${subTotal.toFixed(2)}</label>
-        </div>
-        <div>
-          <label>Taxes and fees: </label>
-          <input
-            type="number"
-            value={taxes}
-            onChange={(e) => handleTaxesChange(e.target.value)}
-            style={{ marginRight: '10px' }}
-          />
-        </div>
-        <div>
-          <label>Grand total: ${grandTotal.toFixed(2)}</label>
-        </div>
-        <button type="submit" style={{ marginTop: '10px' }}>Submit Changes</button>
       </form>
     </div>
   );
