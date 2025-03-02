@@ -8,7 +8,7 @@ import MapComponent from "@/components/map";
 export default async function Home({ params }) {
   const { zipcode, username } = await params;
   const allListings = await getActiveListingsByZip(zipcode);
-  console.log(username);
+  console.log(zipcode);
   return (
     <Box className="h-screen w-screen flex flex-col">
       {/* Navbar */}

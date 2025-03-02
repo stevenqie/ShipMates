@@ -1,4 +1,4 @@
-"use client"; // Ensure this runs on the client
+"use client"; 
 
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
@@ -16,15 +16,39 @@ const ChatMessage = ({ message, isSender = false }) => {
       alignSelf={isSender ? "end" : "start"}
       mt={2}
       boxShadow="md"
+      overflow="hidden"
+      minH= "40px"
+      maxH = "200px"
+      overflowWrap="break-word" // Ensures long words break instead of overflowing
+      wordBreak="break-word" // Breaks words that are too long
+      whiteSpace="pre-wrap" // Preserves new lines while allowing wrapping
     >
       {message}
     </Flex>
   );
 };
+
+
+
 export default function ChatComponent({chatID, userID}) {
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState("");
 
+
+    async function fetchMessages(chatID, userID) { 
+        try {
+            const response = await fetch(`/api/chat?chatID=${chatID}&userID=${userID}`);
+            const data = await response.json();
+
+            if (response.ok) {
+                setMessages(data);
+            } else {
+                throw new Error(data.error || "Failed to fetch messages");
+            }
+        } catch (err) {
+            console.error("Error fetching data: " + err);
+        }
+    }
 
     useEffect(() => {
         if (!chatID || !userID) return;
@@ -44,7 +68,7 @@ export default function ChatComponent({chatID, userID}) {
 
 
         socket.emit("join", joinMsg);
-
+        fetchMessages(chatID, userID);
         return () => {
             socket.emit("disconn", chatID);
             socket.disconnect();
@@ -58,7 +82,6 @@ export default function ChatComponent({chatID, userID}) {
         }
 
         setMessages((prev) => [...prev, newMsg]);
-        console.log("Sending message....");
         if (input.trim()) {
             socket.emit("message", input);
             setInput(""); // Clear input
@@ -67,12 +90,13 @@ export default function ChatComponent({chatID, userID}) {
 
   return (
 
-    <Flex width="50%" height="100%" align="end" justify="center" pb={10} bg="gray.100"> 
-        <VStack width="100%" px={8} py={4}>
+    <VStack width="50%" height="100%" align="end" justify="center" pb={10} bg="gray.100"> 
+        <VStack width="100%" px={8} py={4} height="90vh" overflowY="auto" align="stretch">
         {messages.map((msg, index) => (
             <ChatMessage key={index} message={msg.message} isSender={msg.isSender}/>
         ))}
-      <HStack width="100%" height="40px">
+        </VStack>
+      <HStack width="100%" height="40px"px={8}>
           <Input
             type="text"
             value={input}
@@ -84,6 +108,5 @@ export default function ChatComponent({chatID, userID}) {
       </HStack>
       <p>{chatID}, {userID}</p>
     </VStack>
-    </Flex>
   );
 }
