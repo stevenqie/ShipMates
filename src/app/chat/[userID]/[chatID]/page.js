@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { storage } from '../../../lib/firebaseConfig.js'; // Adjust the path as needed
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { HStack } from '@chakra-ui/react';
 import InvoiceForm from './components/InvoiceForm.js'; // Import the new component
 
 // Replace with your actual function URL from Firebase Console
@@ -80,9 +81,9 @@ const Page = async ({params}) => {
   };
 
   return (
+    <HStack>
     <div style={{ display: 'flex', height: '100vh' }}>
       <div style={{ flex: 1 }}></div>
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
         {!invoiceData && (
           <>
             <h2>Upload Screenshot of Cart Details</h2>
@@ -115,7 +116,8 @@ const Page = async ({params}) => {
           <InvoiceForm invoiceData={invoiceData} userID={userID} chatID={chatID} />
         )}
       </div>
-    </div>
+      <ChatComponent/>
+    </HStack>
   );
 };
 
