@@ -17,6 +17,8 @@ const TransactionDetails = ({ chatID }) => {
   const [transaction, setTransaction] = useState(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+  const [hostID, setHostID] = useState(null);
+  const [personbID, setPersonbID] = useState(null);
 
   // Immediately on mount, set listingID from chatMetadata
   useEffect(() => {
@@ -29,6 +31,8 @@ const TransactionDetails = ({ chatID }) => {
             const metadata = chatMetadataDoc.data();
             const listID = metadata.listingID;
             setListingID(listID);
+            setHostID(metadata.hostID);
+            setPersonbID(metadata.personbID);
           } else {
             console.error("No chatMetadata found for chatID:", chatID);
           }
@@ -106,6 +110,50 @@ const TransactionDetails = ({ chatID }) => {
       await updateDoc(txRef, { status: "fulfilled" });
       setTransaction((prev) => ({ ...prev, status: "fulfilled" }));
       alert("Transaction confirmed. The other user will pay and you will receive pickup details shortly.");
+      
+      //make the first db call 
+      const userQuery = query(
+        collection(db, "users"), 
+        where("username", "==", hostID)
+      );
+      const querySnapshot = await getDocs(userQuery);
+
+      if (querySnapshot.empty) {
+          console.error("host username doesn't exist in the db");
+          return null; //return null if t
+      }
+
+      let userData1 = {};
+      querySnapshot.forEach((doc) => {
+          userData1 = doc.data();
+      });
+
+      //make the second db call 
+      const userQuery2 = query(
+        collection(db, "users"), 
+        where("username", "==", personbID)
+      );
+      const querySnapshot2 = await getDocs(userQuery);
+
+      if (querySnapshot2.empty) {
+          console.error("personb doesn't exist in the db");
+          return null; //return null if t
+      }
+
+      let userData2 = {};
+      querySnapshot2.forEach((doc) => {
+          userData2 = doc.data();
+      });
+
+      const senderID = userData1.accountID; 
+      const receiverID = userData2.accountID; 
+
+      const transferResult = await transaction(senderID, receiverID, String(transaction.personbPaymentAmount.toFixed(2)));
+      if (!transferResult) {
+          console.error("Transaction failed");
+          alert("Transaction failed");
+      }
+
     } catch (error) {
       console.error("Error confirming transaction:", error);
       alert("Error confirming transaction.");
