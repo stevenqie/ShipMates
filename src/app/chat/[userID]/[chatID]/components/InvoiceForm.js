@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import { db } from '@/app/lib/firebaseConfig'; // Adjust the path as needed
-import { collection, doc, setDoc } from 'firebase/firestore';
+import { collection, doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
 
 const InvoiceForm = ({ invoiceData, userID, chatID }) => {
   const [checkedItems, setCheckedItems] = useState({});
@@ -105,9 +105,17 @@ const InvoiceForm = ({ invoiceData, userID, chatID }) => {
 
       await storeTransactionInfo(formData);
       // Clear the screen
-      document.body.innerHTML = '';
+      //document.body.innerHTML = '';
       // Create a pop-up with "Hello World"
+      console.log("hi")
       alert("Success! Order details are being sent to the other user. Please do not pay until the other user confirms.");
+      // Assuming the listingID is the same as chatID and that the listings collection exists
+      // Use chatID in chatMetadata to obtain the listingID to use in listings
+      const chatMetadataRef = doc(db, "chatMetadata", chatID);
+      const chatMetadataSnap = await getDoc(chatMetadataRef);
+      const listingID = chatMetadataSnap.data()?.listingID;
+      const listingRef = doc(db, "listings", listingID);
+      await updateDoc(listingRef, { status: "pending" });
       console.log("Document written with ID: ", chatID);
 
     } catch (e) {
