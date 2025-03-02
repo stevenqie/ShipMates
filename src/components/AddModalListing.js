@@ -156,7 +156,7 @@ function ShippingThresholdForm({formRef}) {
                       style: "currency",
                       currency: "USD",
                     }}
-                onValueChange={(e)=>{formRef.current.minPurchaseRequired = e.target.value}}
+                onValueChange={(e)=>{formRef.current.minPurchaseRequired = e.valueAsNumber}}
         >
           <NumberInputLabel />
           <NumberInputField />
