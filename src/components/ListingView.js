@@ -2,6 +2,8 @@
 import React from "react";
 import { Box, Text } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
+import { db } from '@/app/lib/firebaseConfig'; // Adjust the path as needed
+import { collection, query, where, getDocs, doc, setDoc } from 'firebase/firestore';
 
 function ListingProgressBar({ progress, remaining, threshold }) {
   return (
@@ -22,14 +24,45 @@ function ListingProgressBar({ progress, remaining, threshold }) {
   );
 }
 
-export default function ListingView({ listing }) {
+export default function ListingView({ listing, currentUser }) {
   const router = useRouter();
 
-  const handleBoxClick = () => {
+  const handleBoxClick = async () => {
     console.log("Hello world");
     console.log(JSON.stringify(listing));
     console.log("Clicked listingID:", listing.listingID);
-    router.push(`/chat/${listing.listingID}`);
+
+    // Check if a chatID already exists
+    const chatRef = collection(db, "chats");
+    const chatQuery = query(
+      chatRef, // Use collection directly from db
+      where("hostID", "==", listing.hostID),
+      where("username", "==", currentUser),
+      where("listingID", "==", listing.listingID)
+    );
+
+    const chatSnapshot = await getDocs(chatQuery);
+    let chatID;
+
+    if (chatSnapshot.empty) {
+      // Generate a new chatID if it doesn't exist
+      const newChatRef = doc(chatRef); // Generate a new document reference with a unique ID
+      chatID = newChatRef.id; // Get the generated unique ID
+      await setDoc(newChatRef, { // Use setDoc to create the document
+        chatID: chatID, // Include the chatID field
+        hostID: listing.hostID,
+        username: currentUser,
+        listingID: listing.listingID,
+        timestamp: new Date()
+      });
+      console.log("Generated new chatID:", chatID);
+    } else {
+      // Use the existing chatID
+      chatID = chatSnapshot.docs[0].id;
+      console.log("Using existing chatID:", chatID);
+    }
+
+    router.push(`/chat/${currentUser}/${chatID}`);
   };
 
   const freeShippingThreshold = listing.currentTotal + listing.minPurchaseRequired;
