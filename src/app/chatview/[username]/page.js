@@ -8,7 +8,7 @@ import { getUserInfo } from "@/app/lib/getUserInfo";
 import Profile from "@/components/accountDisplay";
 
 export default function Home() {
-  const { username } = useParams(); // ✅ Correctly accessing dynamic params
+  const { username } = useParams(); 
   const router = useRouter();
   const [chatData, setChatData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -51,26 +51,30 @@ export default function Home() {
   }
 
   return (
-    <div className="relative flex items-center justify-center h-screen bg-gray-100 p-4">
-      <div className="absolute top-4 right-4 bg-white shadow-md rounded-lg p-4">
-        <Profile userName={username} />
-      </div>
+    <div className="page-container">
+      {/* Blurred background div */}
+      <div className="blurred-background"></div>
       
-      {/* Main Content */}
-      <div className="flex flex-col items-center justify-center w-full max-w-2xl mt-8">
-        <h1 className="text-2xl font-bold mb-4">Recent Chats</h1>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {chatData.map((chat, index) => (
-            <ChatCard
-              key={index}
-              title={chat.title}
-              imageUrl={chat.imageUrl}
-              onClick={() => {
-                console.log(`Navigating to: /chat/${username}/${chat.chatID}`); // ✅ Debugging
-                router.push(`/chat/${username}/${chat.chatID}`);
-              }}
-            />
-          ))}
+      {/* Content container - NOT blurred */}
+      <div className="content-container">
+        <div className="absolute top-4 right-4 bg-white shadow-md rounded-lg p-4">
+          <Profile userName={username} />
+        </div>
+        <div className="flex flex-col items-center justify-center h-screen">
+          <h1 className="heading-text mb-6">Recent Chat Requests</h1>
+          <div>
+            {chatData.map((chat, index) => (
+              <ChatCard
+                key={index}
+                title={chat.title}
+                imageUrl={chat.imageUrl}
+                onClick={() => {
+                  console.log(`Navigating to: /chat/${username}/${chat.chatID}`);
+                  router.push(`/chat/${username}/${chat.chatID}`);
+                }}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </div>

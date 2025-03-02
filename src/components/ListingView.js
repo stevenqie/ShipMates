@@ -2,8 +2,10 @@
 import React from "react";
 import { Box, Text, Image } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import "./style.css";
 import { db } from '@/app/lib/firebaseConfig'; // Adjust the path as needed
-import { collection, query, where, getDocs, doc, setDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, setDoc, getDoc } from 'firebase/firestore';
 
 const stores_map = new Map([
   ["Amazon", "https://www.hatchwise.com/wp-content/uploads/2022/08/Amazon-Logo-2000-present-1024x576.jpeg"],
@@ -15,21 +17,28 @@ const stores_map = new Map([
 ]);
 
 function ListingProgressBar({ progress, remaining, threshold }) {
+  const [animatedProgress, setAnimatedProgress] = useState(0);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => setAnimatedProgress(progress), 200);
+    return () => clearTimeout(timeout);
+  }, [progress]);
+
   return (
-    <Box className="w-full">
-      <Box className="w-full h-2 bg-gray-200 rounded">
-        <Box
-          className="h-full bg-blue-500 rounded transition-all duration-300"
-          style={{ width: `${progress}%` }}
-        ></Box>
-      </Box>
-      <p>
-        <Text as="span" fontWeight="bold">
-          ${remaining} remaining
-        </Text>{" "}
-        of ${threshold} threshold
+    <div className="w-full">
+      {/* Progress Bar Container */}
+      <div className="w-full h-2 bg-gray-200 rounded overflow-hidden">
+        <div
+          className="h-full bg-blue-500 rounded transition-all duration-1000 ease-in-out"
+          style={{ width: `${animatedProgress}%` }}
+        ></div>
+      </div>
+      
+      {/* Progress Text */}
+      <p className="mt-2 text-sm">
+        <strong>${remaining} remaining</strong> of ${threshold} threshold
       </p>
-    </Box>
+    </div>
   );
 }
 
@@ -41,12 +50,17 @@ export default function ListingView({ listing, currentUser }) {
     console.log(JSON.stringify(listing));
     console.log("Clicked listingID:", listing.listingID);
 
+    // Fetch the hostID from the listingID
+    const listingRef = doc(db, "listings", String(listing.listingID));
+    const listingDoc = await getDoc(listingRef);
+    const hostID = listingDoc.data().hostID;
+
     // Check if a chatID already exists
-    const chatRef = collection(db, "chats");
+    const chatRef = collection(db, "chatMetadata");
     const chatQuery = query(
       chatRef, // Use collection directly from db
-      where("hostID", "==", listing.hostID),
-      where("username", "==", currentUser),
+      where("hostID", "==", hostID),
+      where("personbID", "==", currentUser),
       where("listingID", "==", listing.listingID)
     );
 
@@ -59,8 +73,8 @@ export default function ListingView({ listing, currentUser }) {
       chatID = newChatRef.id; // Get the generated unique ID
       await setDoc(newChatRef, { // Use setDoc to create the document
         chatID: chatID, // Include the chatID field
-        hostID: listing.hostID,
-        username: currentUser,
+        hostID: hostID,
+        personbID: currentUser,
         listingID: listing.listingID,
         timestamp: new Date()
       });
@@ -81,7 +95,7 @@ export default function ListingView({ listing, currentUser }) {
 
   return (
     <div
-      className="flex flex-col bg-gray-100 rounded p-4 cursor-pointer"
+      className="listing-card"
       onClick={handleBoxClick}
     >
       <Box className="bg-gray-200 h-24 rounded flex items-center justify-center">
@@ -98,7 +112,7 @@ export default function ListingView({ listing, currentUser }) {
         <Text fontWeight="bold">{listing.title}</Text>
         <p>{listing.avgRating} ({listing.numReviews})</p>
       </Box>
-      <p className="text-sm text-grey-400 pt-3 pb-2">{listing.description}</p>
+      <p className="text-sm text-black pt-3 pb-2">{listing.description}</p>
       <ListingProgressBar
         progress={percentComplete}
         remaining={listing.minPurchaseRequired}
