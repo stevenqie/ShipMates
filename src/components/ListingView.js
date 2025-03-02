@@ -3,7 +3,7 @@ import React from "react";
 import { Box, Text, Image } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import { db } from '@/app/lib/firebaseConfig'; // Adjust the path as needed
-import { collection, query, where, getDocs, doc, setDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, setDoc, getDoc } from 'firebase/firestore';
 
 const stores_map = new Map([
   ["Amazon", "https://www.hatchwise.com/wp-content/uploads/2022/08/Amazon-Logo-2000-present-1024x576.jpeg"],
@@ -41,12 +41,17 @@ export default function ListingView({ listing, currentUser }) {
     console.log(JSON.stringify(listing));
     console.log("Clicked listingID:", listing.listingID);
 
+    // Fetch the hostID from the listingID
+    const listingRef = doc(db, "listings", String(listing.listingID));
+    const listingDoc = await getDoc(listingRef);
+    const hostID = listingDoc.data().hostID;
+
     // Check if a chatID already exists
-    const chatRef = collection(db, "chats");
+    const chatRef = collection(db, "chatMetadata");
     const chatQuery = query(
       chatRef, // Use collection directly from db
-      where("hostID", "==", listing.hostID),
-      where("username", "==", currentUser),
+      where("hostID", "==", hostID),
+      where("personbID", "==", currentUser),
       where("listingID", "==", listing.listingID)
     );
 
@@ -59,8 +64,8 @@ export default function ListingView({ listing, currentUser }) {
       chatID = newChatRef.id; // Get the generated unique ID
       await setDoc(newChatRef, { // Use setDoc to create the document
         chatID: chatID, // Include the chatID field
-        hostID: listing.hostID,
-        username: currentUser,
+        hostID: hostID,
+        personbID: currentUser,
         listingID: listing.listingID,
         timestamp: new Date()
       });
