@@ -3,13 +3,13 @@ import { db } from "@/app/lib/firebaseConfig";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 export async function POST(req) {
-    console.log("Recieved req: " + JSON.stringify(req));
     try {
         const data = await req.json(); // Parse JSON body
-
+        const timeStamp = serverTimestamp(); 
+        console.log("Recieved data: " + data);
         const dataWithServerFields = {
             ...data,
-            createdAt: serverTimestamp(),
+            createdAt: timeStamp,
 
         }
         

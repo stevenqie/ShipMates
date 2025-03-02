@@ -2,8 +2,15 @@
 import { useState } from "react";
 import AddModalListing from "./AddModalListing";
 import { Box, Button, Input, Text, Image, Flex } from "@chakra-ui/react";
+import { useRouter } from 'next/navigation';
 
-export default function SearchBar({zipcode}) {
+export default function SearchBar({zipcode, uname}) {
+    const router = useRouter();
+    const handleViewChat = async (e) => {
+        e.preventDefault();
+        router.push(`/chatview/${uname}`);
+
+    }
     return (
         <Box 
             w="full"
@@ -40,8 +47,12 @@ export default function SearchBar({zipcode}) {
                 />
             </Flex>
 
+            <Box>
+                <Button onClick={handleViewChat}>View Chats</Button>
+                <AddModalListing uname={uname}/>
+            </Box>
 
-            <AddModalListing/>
+            
         </Box>
     );
 
