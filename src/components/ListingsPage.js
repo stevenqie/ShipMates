@@ -30,8 +30,9 @@ export default function ListingsPage({ zipcode }) {
       {/* Main Layout */}
       <Box className="flex flex-2">
         {/* Left Side - Grid Layout */}
-        <Box className="w-1/2" p="10">
-          <Text>{listings.length} listings in {zipcode}</Text>
+        <Box className="w-1/2" p="10" flex flex-col>
+          <Box className="w-full text-center mb-4"></Box>
+          <Text>{listings.length} listings in {zipcode}</Text>\
           <Box className="grid grid-cols-3 gap-4">
             {listings.map((listing, index) => (
               <ListingView key={index} listing={listing} onDelete={handleDeleteListing} />

@@ -1,0 +1,74 @@
+/* Custom Styles for Listing Card */
+.listing-card {
+    position: relative;
+    width: 100%;
+    background: linear-gradient(135deg, #00a6ff, #d03027);
+    display: flex;
+    flex-direction: column;
+    border-radius: 12px;
+    padding: 1rem;
+    cursor: pointer;
+    user-select: none;
+    animation: gradient-shift 10s ease-in-out infinite;
+    background-size: 200% 200%;
+  }
+  
+  .listing-card::before,
+  .listing-card::after {
+    --size: 5px;
+    content: "";
+    position: absolute;
+    top: calc(var(--size) / -2);
+    left: calc(var(--size) / -2);
+    width: calc(100% + var(--size));
+    height: calc(100% + var(--size));
+    background: radial-gradient(circle at 0 0, hsl(27deg 93% 60%), transparent),
+      radial-gradient(circle at 100% 0, #00a6ff, transparent),
+      radial-gradient(circle at 0 100%, #d03027, transparent),
+      radial-gradient(circle at 100% 100%, #6500ff, transparent);
+  }
+  
+  .listing-card::after {
+    --size: 2px;
+    z-index: -1;
+  }
+  
+  .listing-card::before {
+    --size: 10px;
+    z-index: -2;
+    filter: blur(2vmin);
+    animation: blur-animation 3s ease-in-out alternate infinite;
+  }
+  
+  @keyframes blur-animation {
+    to {
+      filter: blur(3vmin);
+      transform: scale(1.05);
+    }
+  }
+  
+  @keyframes gradient-shift {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+  
+  /* Inner Content Styling */
+  .listing-title {
+    font-weight: bold;
+    color: white;
+    font-size: 1.2rem;
+  }
+  
+  .listing-description {
+    font-size: 0.9rem;
+    color: #e0e0e0;
+    padding-top: 0.5rem;
+  }
+  
