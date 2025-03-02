@@ -1,6 +1,7 @@
 import ChatCard from "./chatCard";
 
-export default function Home() {
+export default async function Home({params}) {
+  const {username} = await params;
   return (
     <div className="flex items-center justify-center h-screen">
     <div>
