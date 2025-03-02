@@ -21,7 +21,6 @@ async function fetchCoordinates(zipcode) {
 }
 
 async function addMarkerFromLocation(map, address, markersRef, onMarkerClick) {
-    console.log(`Geocoding address: ${address}`);
     const endpoint = `https://api.mapbox.com/search/geocode/v6/forward?q=${address}&limit=1&access_token=${mapboxgl.accessToken}`;
     try {
         const response = await fetch(endpoint);
