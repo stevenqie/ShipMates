@@ -1,4 +1,3 @@
-"use client"
 import {
         Button,
         DialogRoot, 
@@ -185,13 +184,12 @@ function DescriptionForm({formRef}) {
       </Field>
     );
 }
-export default function AddModalListing() {
+export default function Listing({uname}) {
     const zipcode = 60126;
-
 
     const formRef = useRef({
         listingID: -1, // TODO: This should be server side
-        hostID: -1, // TODO: This should be from auth
+        hostID: uname, // TODO: This should be from auth
         store: "",
         title: "",
         status: "active",
