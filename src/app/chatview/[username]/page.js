@@ -5,6 +5,7 @@ import { useRouter, useParams } from "next/navigation";
 import ChatCard from "./chatCard";
 import { getChats } from "@/app/lib/getChats";
 import { getUserInfo } from "@/app/lib/getUserInfo";
+import Profile from "@/components/accountDisplay";
 
 export default function Home() {
   const { username } = useParams(); 
@@ -56,6 +57,9 @@ export default function Home() {
       
       {/* Content container - NOT blurred */}
       <div className="content-container">
+        <div className="absolute top-4 right-4 bg-white shadow-md rounded-lg p-4">
+          <Profile userName={username} />
+        </div>
         <div className="flex flex-col items-center justify-center h-screen">
           <h1 className="heading-text mb-6">Recent Chat Requests</h1>
           <div>
