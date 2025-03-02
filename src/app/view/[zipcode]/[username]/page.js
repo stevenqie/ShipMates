@@ -25,6 +25,7 @@ export default async function Home({ params }) {
                 key={index}
                 index={index}
                 listing={listing}
+                currentUser={username}
               />
               ))}
             </Box>
@@ -32,7 +33,7 @@ export default async function Home({ params }) {
           {/* Right Side - Empty for Map Integration */}
           <Box className="w-1/2 bg-gray-50 flex items-center justify-center">
             {/* Map will go here */}
-            <MapComponent listings={allListings} zipcode={zipcode}/>
+            <MapComponent listings={allListings} zipcode={zipcode} currentUser={username}/>
           </Box>
         </Box>
       </Box>

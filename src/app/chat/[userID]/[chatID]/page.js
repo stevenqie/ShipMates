@@ -1,89 +1,103 @@
-"use client"
-import React, { useState } from 'react';
-import { storage } from '../../../lib/firebaseConfig.js'; // Adjust the path as needed
+"use client";
+import React, { useState, useEffect } from 'react';
+import { storage, db } from '../../../lib/firebaseConfig.js'; // Adjust the path as needed
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-import { HStack } from '@chakra-ui/react';
+import { HStack, Flex} from '@chakra-ui/react';
+import { doc, getDoc } from 'firebase/firestore';
 import InvoiceForm from './components/InvoiceForm.js'; // Import the new component
+import ChatComponent from '@/components/ChatComponent.js';
 
 // Replace with your actual function URL from Firebase Console
 const functionUrl = "https://parseinvoice-tayv6iv37a-uc.a.run.app";
-console.log("hello world")
+
 async function callParseInvoice(imageName) {
   try {
-    // Build the query parameter with image_name
     const url = `${functionUrl}?image_name=${encodeURIComponent(imageName)}`;
-
-    // Make a GET request to your Cloud Function
     const response = await fetch(url, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
     });
-
     if (!response.ok) {
-      // Handle HTTP errors
       const errorText = await response.text();
       throw new Error(`Request failed: ${response.status} - ${errorText}`);
     }
-
-    // Parse the JSON response
     const data = await response.json();
     console.log("Parsed invoice data:", data);
-
-    // Do something with the result...
     return data;
   } catch (error) {
     console.error("Error calling parseInvoice function:", error);
-    throw error; // or handle the error in your UI
+    throw error;
   }
 }
 
-const Page = async ({params}) => {
-  const {userID, chatID} = await params;
+const Page = ({ params }) => {
+  const [userID, setUserID] = useState(null);
+  const [chatID, setChatID] = useState(null);
+  const [allowedUpload, setAllowedUpload] = useState(null);
   const [image, setImage] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [invoiceData, setInvoiceData] = useState(null);
 
+  // Get userID and chatID from params
+  useEffect(() => {
+    params.then(({ userID, chatID }) => {
+      setUserID(userID);
+      setChatID(chatID);
+    });
+  }, [params]);
+
+  // Check if current user matches the hostID from chatMetadata
+  useEffect(() => {
+    async function checkUser() {
+      if (chatID && userID) {
+        const chatDocRef = doc(db, "chatMetadata", chatID);
+        const chatDoc = await getDoc(chatDocRef);
+        if (chatDoc.exists()) {
+          const data = chatDoc.data();
+          // Render upload only if the current user is the host
+          setAllowedUpload(data.hostID === userID);
+        } else {
+          setAllowedUpload(false);
+        }
+      }
+    }
+    checkUser();
+  }, [chatID, userID]);
+
   const handleImageUpload = (event) => {
+    if (!event) return;
     const file = event.target.files[0];
-    console.log("image")
     if (file) {
       const storageRef = ref(storage, `invoices/${file.name}`);
       const uploadTask = uploadBytesResumable(storageRef, file);
-
       uploadTask.on(
         'state_changed',
         (snapshot) => {
           const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           setUploadProgress(progress);
         },
-        (error) => {
-          console.error('Upload failed', error);
-        },
+        (error) => { console.error('Upload failed', error); },
         () => {
-          console.log('Upload successful');
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
             setImage(downloadURL);
-            // Call the parseInvoice function here
             callParseInvoice(file.name)
-              .then((result) => {
-                console.log("Function result:", result);
-                setInvoiceData(result);
-              })
-              .catch((err) => {
-                console.error("Error:", err);
-              });
+              .then((result) => setInvoiceData(result))
+              .catch((err) => console.error("Error:", err));
           });
         }
       );
     }
   };
 
+  // If not allowed, render nothing (white screen)
+  if (allowedUpload === false) {
+    return <></>;
+  }
+
   return (
-    <HStack>
-    <div style={{ display: 'flex', height: '100vh' }}>
-      <div style={{ flex: 1 }}></div>
+    <HStack width="100vw" height="100vh" spacing={0}>
+        <ChatComponent/>
+        <Flex width="50%" height="100%" p={8} justify="flex-end">
         {!invoiceData && (
           <>
             <h2>Upload Screenshot of Cart Details</h2>
@@ -112,11 +126,10 @@ const Page = async ({params}) => {
             {uploadProgress > 0 && <p>Upload Progress: {uploadProgress}%</p>}
           </>
         )}
-        {invoiceData && (
+        {invoiceData && userID && chatID && (
           <InvoiceForm invoiceData={invoiceData} userID={userID} chatID={chatID} />
         )}
-      </div>
-      <ChatComponent/>
+        </Flex>
     </HStack>
   );
 };
