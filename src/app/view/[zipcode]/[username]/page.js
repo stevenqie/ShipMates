@@ -5,6 +5,7 @@ import { Box, Text } from "@chakra-ui/react";
 import { getActiveListingsByZip } from "@/app/lib/fetchData";
 import { getUser } from "@/app/lib/getUser";
 import MapComponent from "@/components/map";
+import "./style.css";
 export default async function Home({ params }) {
   const { zipcode, username } = await params;
   const allListings = await getActiveListingsByZip(zipcode);
@@ -16,8 +17,8 @@ export default async function Home({ params }) {
       {/* Main Layout */}
       <Box className="flex flex-2">
         {/* Left Side - Grid Layout */}
-        <Box className="w-1/2" p="10">
-          <Text>{allListings.length} listings in {zipcode}</Text>
+        <Box className="w-1/2 p-10 animated-gradient">
+          <Text className="number-listing-text">{allListings.length} listings in {zipcode}</Text>
           <Box className="grid grid-cols-3 gap-4">
             {allListings.map((listing, index) => (
               <ListingView
