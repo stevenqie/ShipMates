@@ -14,7 +14,7 @@ async function getActiveListingsByZip(zipCode) {
         console.log(doc.data().hostID);
     });
     return snapshot.docs.map((doc) => ({ 
-        listingID: doc.data().listingID,
+        listingID: doc.id,
         hostID: doc.data().hostID, 
         title: doc.data().title,
         // TODO: Fetch user's name

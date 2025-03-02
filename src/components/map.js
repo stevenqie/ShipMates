@@ -21,7 +21,6 @@ async function fetchCoordinates(zipcode) {
 }
 
 async function addMarkerFromLocation(map, address, markersRef, onMarkerClick) {
-    console.error(`Geocoding address: ${address}`);
     const endpoint = `https://api.mapbox.com/search/geocode/v6/forward?q=${address}&limit=1&access_token=${mapboxgl.accessToken}`;
     try {
         const response = await fetch(endpoint);
@@ -64,7 +63,7 @@ async function addMarkerFromLocation(map, address, markersRef, onMarkerClick) {
     }
 }
 
-export default function MapComponent({ listings = [], zipcode= '' }) {
+export default function MapComponent({ listings = [], zipcode= '', currentUser=''}) {
   const [map, setMap] = useState(null);
   const [selectedListing, setSelectedListing] = useState(null);
   const mapContainerRef = useRef(null); // This will hold our markers
@@ -152,7 +151,7 @@ export default function MapComponent({ listings = [], zipcode= '' }) {
                     <Button size="xs" onClick={() => setSelectedListing(null)} mb="4">
                         Close
                     </Button>
-                    <ListingView listing={selectedListing} />
+                    <ListingView listing={selectedListing} currentUser = {currentUser} />
                 </div>
             )}
         </>
