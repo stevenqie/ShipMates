@@ -104,7 +104,12 @@ const InvoiceForm = ({ invoiceData, userID, chatID }) => {
       };
 
       await storeTransactionInfo(formData);
+      // Clear the screen
+      document.body.innerHTML = '';
+      // Create a pop-up with "Hello World"
+      alert("Success! Order details are being sent to the other user. Please do not pay until the other user confirms.");
       console.log("Document written with ID: ", chatID);
+
     } catch (e) {
       console.error("Error adding document: ", e);
     }
@@ -112,7 +117,7 @@ const InvoiceForm = ({ invoiceData, userID, chatID }) => {
 
   return (
     <div style={{ marginTop: '20px' }}>
-      <h3>Invoice Details</h3>
+      <h3>Select your items from submitted invoice</h3>
       <form onSubmit={handleSubmit}>
         {items.map((item, index) => (
           <div key={index}>
