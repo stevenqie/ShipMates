@@ -17,49 +17,60 @@ app.prepare().then(() => {
 
    
     const listingKeyToUsers = new Map();
+    const userToListingKey = new Map();
+
     io.on("connection", (socket) => {
         const currentId = socket.id;
         
         count += 1;
 
         socket.on("join", (listingKey) => {
-            const otherUserLoggedIn = listingKeyToUsers.has(listingKey);
-            
-            if (otherUserLoggedIn) {
-                listingKeyToUsers.get(listingKey).push(currentId);
-            } else {
-                listingKeyToUsers.set(listingKey, [currentId]);
-            }
+            const listingKeyString = JSON.stringify(listingKey);
+            const otherUserLoggedIn = listingKeyToUsers.has(listingKeyString);
 
-            console.log("After join " + currentId + " -> ");
+            if (otherUserLoggedIn) {
+                listingKeyToUsers.get(listingKeyString).push(currentId);
+            } else {
+                listingKeyToUsers.set(listingKeyString, [currentId]);
+            }
+            userToListingKey.set(currentId, listingKeyString);
+
+            console.log("After join " + currentId +  "(other logged in): " + otherUserLoggedIn + "  -> ");
             console.table(listingKeyToUsers);
         });
         
-        socket.on("disconn", (_) => {
-            const currentClientList = listingKeyToUsers.get(data.listingKey);
-            const otherUserLoggedIn = currentClientList.length == 2;
+        socket.on("disconnect", (_) => {
+            const listingKeyString = userToListingKey.get(currentId);
+            if (!listingKeyString) {
+                return;
+            }
+
+            const currentClientList = listingKeyToUsers.get(listingKeyString);
+            const otherUserLoggedIn = currentClientList && currentClientList.length == 2;
             if (otherUserLoggedIn) {
                 const idxToDel = currentClientList.findIndex(currentId);
                 currentClientList.splice(idxToDel, 1);
             } else {
-                listingKeyToUsers.delete(data.listingKey);
+                console.log("Full delete");
+                listingKeyToUsers.delete(listingKeyString);
             }
 
-            console.log("After disconn " + currentId + " -> ");
+            console.log("After disconnect " + currentId + " -> ");
             console.table(listingKeyToUsers);
         });
 
-        socket.on("message", (data) => {
-            console.table(listingKeyToUsers);
-            const currentClientList = listingKeyToUsers.get(data.listingKey);
+        socket.on("message", (msg) => {
+            const listingKeyString = userToListingKey.get(currentId);
+            console.log(JSON.stringify(msg));
+            const currentClientList = listingKeyToUsers.get(listingKeyString);
             const otherUserLoggedIn = currentClientList && currentClientList.length == 2;
             if (otherUserLoggedIn) {
                 console.log("Found other user");
                 const otherId = currentClientList[0] == socket.id ? currentClientList[1] : currentClientList[0];
-                io.to(otherId).emit("message", data.msg);
+                io.to(otherId).emit("message", msg);
             }
             console.log("TODO: Send msg to DB");
-            console.log("After msg " + data + " -> ");
+            console.log("After msg " + msg + " -> ");
             console.table(listingKeyToUsers);
         });
     });
