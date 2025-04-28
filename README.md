@@ -1,3 +1,8 @@
+### Shipmates 
+
+Our inspiration for this project comes from the common frustration of not being able to reach the free shipping threshold when shopping or buying groceries online. Many people either end up paying extra for shipping or adding unnecessary items to their cart just to meet the requirement. We wanted to solve this problem by connecting users who are shopping on the same website, allowing them to combine their orders and share the benefits of free shipping. By fostering a community-driven approach to online shopping, this platform not only helps users save money but also encourages smarter, more efficient purchasing habits. Online businesses also benefit from this platform. By encouraging collaborative purchases, businesses see higher transaction volumes, reduced abandoned carts, and enhanced customer satisfaction. It also helps reduce their logistics and shipping costs. Instead of fulfilling multiple smaller orders with separate packaging, handling, and shipping expenses, they can consolidate purchases into a single shipment.
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
